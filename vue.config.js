@@ -5,7 +5,10 @@ module.exports = {
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1
       })
-    ]
+    ],
+    optimization: {
+        splitChunks: false
+    }
   },
   chainWebpack:
     config => {
