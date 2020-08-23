@@ -1,5 +1,5 @@
 <template>
-  <div class="order-button">
+  <div>
     <button class="btn btn-primary" @click="show">Order Now</button>
     <modal name="order-modal" height="auto" width="600px">
         <form-wizard :title="restaurant_name" subtitle="" step-size="xs" @on-complete="onComplete" finish-button-text="Pay & Finish" shape="tab" :start-index="0">
@@ -66,8 +66,6 @@
 import {FormWizard, TabContent} from 'vue-form-wizard'
 import FoodCard  from './FoodCard.vue';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
-import 'bootstrap'
-import 'bootstrap/dist/css/bootstrap.min.css'
 import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {

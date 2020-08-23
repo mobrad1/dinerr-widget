@@ -64,7 +64,7 @@ export default {
     }
 
     .form-control{
-        width: 40%;
+        width: 50%;
         height: 20px;
         margin: 3px;
         padding: 12px;
