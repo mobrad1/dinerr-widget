@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button class="btn btn-primary" @click="show">Order Now</button>
+    <button :class="button" @click="show">Order </button>
     <modal name="order-modal" height="auto" width="600px">
         <form-wizard :title="restaurant_name" subtitle="" step-size="xs" @on-complete="onComplete" finish-button-text="Pay & Finish" shape="tab" :start-index="0">
           <tab-content title="Order details" >
@@ -75,6 +75,7 @@ export default {
     TabContent,
     FoodCard
   },
+  props : ["button"],
   data () {
     return {
       api : "http://localhost:8000/api/",

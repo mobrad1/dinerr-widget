@@ -7,9 +7,10 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/',
+      path: '/:button',
       name: 'HelloWorld',
-      component: HelloWorld
+      component: HelloWorld,
+      props: true
     }
   ]
 })
