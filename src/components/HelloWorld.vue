@@ -142,7 +142,7 @@ export default {
                     reference : response.reference,
                     phone : a.telephone
                   }).then(response => {
-                    a.$modal.hide('order-modal');
+                    alert("Order Placed succesffully")
                   }).catch(e => {
                     console.log(e)
                   })
