@@ -77,7 +77,7 @@ export default {
   props : ["button"],
   data () {
     return {
-      api : "http://localhost:8000/api/",
+      api : "https://dev.dinerr.app/api/",
       restaurant_name : "",
       email : "",
       firstName : "",
