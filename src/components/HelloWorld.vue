@@ -1,6 +1,6 @@
 <template>
   <div class="dinerr-widget">
-        <form-wizard :title="restaurant_name" subtitle="" step-size="xs" @on-complete="onComplete" finish-button-text="Pay & Finish" shape="tab" :start-index="0">
+        <form-wizard :title="restaurant_name" subtitle="" step-size="xs" @on-complete="onComplete" finish-button-text="Pay & Finish" shape="tab" :start-index="0" >
           <tab-content title="Order details" >
             <div class="food-holder">
               <food-card v-for="food in foods" :key="food.id" :food="food" :img=getImage(food.media) >
@@ -77,7 +77,7 @@ export default {
   props : ["button"],
   data () {
     return {
-      api : "https://dev.dinerr.app/api/",
+      api : "http://localhost:8000/api/",
       restaurant_name : "",
       email : "",
       firstName : "",
@@ -184,34 +184,36 @@ a {
   color: #42b983;
 }
 .dinerr-widget{
-  width: 40%;
-  margin:0px auto;
+  width: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100%;
+  box-shadow:  #cccccc 5px 20px 15px 0px;
 }
 .food-holder{
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-  align-items: stretch;
+  min-height : 400px;
+  max-height: 450px;
   justify-content: center;
-  height: 400px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 /* width */
 ::-webkit-scrollbar {
-  width: 20px;
+  width: 10px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey;
   border-radius: 10px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background: red;
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
 </style>

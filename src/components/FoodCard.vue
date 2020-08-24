@@ -1,19 +1,21 @@
 <template>
-  <div class="food-card">
+  <div class="food-card d-flex flex-column m-2">
         <div class="food-img" :style="imageBackground(img)">
             <div class="p_input">   
                 <input type="checkbox" class="p_checkbox"  @change="addItem(food)">
             </div>
         </div>
-        <div class="food-details p-3">
-            <span class="price-name flex-column">
+
+        <div class="food-details d-flex flex-grow-1 p-3 flex-column justify-content-between">
+            <div class="price-name flex-column">
                 <span class="h6">{{food.name}}</span>
-                <b><p class="text-primary">{{food.price | currency}}</p></b>
-            </span>
-             <div class="food-price flex">
-                 <label for="quantity" class="text-muted">Quantity</label>
-                 <input class="form-control" id="quantity" type="number" v-model="quantity">
-             </div>
+                <b><p class="text-primary mb-0">{{food.price | currency}}</p></b>
+            </div>
+
+            <div class="food-price d-flex align-items-center">
+                <label for="quantity" class="text-muted mr-2">Quantity</label>
+                <input class="form-control" id="quantity" type="number" @change="updateItem(food)" v-model="quantity">
+            </div>
         </div>
   </div>
 </template>
@@ -37,6 +39,10 @@ export default {
         addItem(food){
           food.quantity = this.quantity  
           this.$store.dispatch('addFoodToCart',food)
+        },
+        updateItem(food){
+          food.quantity = this.quantity
+          this.$store.dispatch('updateFoodToCart',food)  
         }
     }
 }
@@ -47,6 +53,7 @@ export default {
         width: 150px;
         margin : 5px;
         border: 1px solid whitesmoke;
+        height: 285px;
     }
     .food-details {
         border-top: 1px solid whitesmoke;

@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-const api = "https://dev.dinerr.app/api/"
+const api = "http://localhost:8000/api/"
 Vue.use(Vuex);
 Vue.use(VueAxios, axios)
 
@@ -75,8 +75,16 @@ export default new Vuex.Store({
             }else{
                commit('popFoodFromCart',{id: food.id})
             }
-            
-            
+              
+          },
+          updateFoodToCart({state,commit},food) {
+              const cartItem = state.items.find(item => item.id == food.id)
+              {
+                  if(cartItem){
+                    commit('popFoodFromCart',{id: food.id})
+                    commit('pushFoodToCart', { id: food.id ,quantity : food.quantity,price : food.price})
+                  }
+              }
           }
     },
     modules: {},
