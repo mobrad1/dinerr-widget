@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <button :class="button" @click="show">Order </button>
-    <modal name="order-modal" height="auto" width="600px">
+  <div class="dinerr-widget">
         <form-wizard :title="restaurant_name" subtitle="" step-size="xs" @on-complete="onComplete" finish-button-text="Pay & Finish" shape="tab" :start-index="0">
           <tab-content title="Order details" >
             <div class="food-holder">
@@ -55,10 +53,9 @@
               </div>
           </tab-content>
         
-          
           <div>Total Price {{total | currency}} </div>
       </form-wizard>
-    </modal>
+   
   </div>
 </template>
 <script src=""></script> 
@@ -66,6 +63,8 @@
 import {FormWizard, TabContent} from 'vue-form-wizard'
 import FoodCard  from './FoodCard.vue';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+import 'bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -184,6 +183,11 @@ li {
 a {
   color: #42b983;
 }
+.dinerr-widget{
+  width: 40%;
+  margin:0px auto;
+  height: 100%;
+}
 .food-holder{
   display: flex;
   flex-wrap: wrap;
@@ -192,6 +196,22 @@ a {
   justify-content: center;
   height: 400px;
   overflow-y: scroll;
+}
+/* width */
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: red;
+  border-radius: 10px;
 }
 
 </style>

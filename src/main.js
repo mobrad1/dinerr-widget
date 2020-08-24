@@ -22,7 +22,7 @@ Vue.use(VueAxios, axios)
 Vue.use(VModal, { componentName: 'Modal' })
 App.router = router
 App.store = store
-Vue.customElement('vue-widget', App,{
+Vue.customElement('dinerr-widget', App,{
     props : ['restaurant_id']
 })
 
