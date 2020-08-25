@@ -1,7 +1,14 @@
 <template>
   <div class="dinerr-widget">
-        <form-wizard :title="restaurant_name" subtitle="" step-size="xs" @on-complete="onComplete" finish-button-text="Pay & Finish" shape="tab" :start-index="0" >
+        <form-wizard :title="restaurant_name" subtitle="" v-if="!isComplete" step-size="xs" @on-complete="onComplete" finish-button-text="Pay & Finish" shape="tab" :start-index="index" >
           <tab-content title="Order details" >
+            <div class="form-group">
+      
+              <select v-model="category_id"  class="form-control" @change="updateFoods($event)">
+                <option disabled value="">Select a category</option>
+                <option  v-for="category in categories" :key="category.id" :value="category.id">{{category.name}}</option>
+              </select>
+            </div>
             <div class="food-holder">
               <food-card v-for="food in foods" :key="food.id" :food="food" :img=getImage(food.media) >
 
@@ -55,6 +62,11 @@
         
           <div>Total Price {{total | currency}} </div>
       </form-wizard>
+      <div class="success-alert" v-if="isComplete">
+          <h4 class="m-2">Order Placed successfully</h4>
+          <button class="btn btn-primary" @click="resetForm">Order Again</button>
+          <p class="m-2 text-center">Telephone : <a :href="'tel:' + restaurant_telephone">  {{restaurant_telephone}}</a></p>
+      </div>
    
   </div>
 </template>
@@ -62,6 +74,7 @@
 <script>
 import {FormWizard, TabContent} from 'vue-form-wizard'
 import FoodCard  from './FoodCard.vue';
+
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -77,7 +90,7 @@ export default {
   props : ["button"],
   data () {
     return {
-      api : "http://localhost:8000/api/",
+      api : "https://dev.partner.app/api/",
       restaurant_name : "",
       email : "",
       firstName : "",
@@ -87,6 +100,11 @@ export default {
       address : "",
       telephone : "",
       selectedItems : [],
+      restaurant_telephone : "",
+      isComplete : false,
+      categories : [],
+      category_id : '',
+      index : 0
     }
   },
   computed: {
@@ -112,7 +130,16 @@ export default {
           }
           return "../assets/logo.png"
         },
-        
+        resetForm(){
+          this.isComplete = false;
+          this.index = 0
+          this.$isLoading(true)
+          this.$store.dispatch("resetItems")
+          this.$isLoading(false)
+        },
+        updateFoods(event){
+          this.$store.dispatch("updateAllFoods",event.target.value)
+        },
         onComplete(){
             let a = this;
             let handler = PaystackPop.setup({
@@ -121,15 +148,17 @@ export default {
             amount: this.total * 100,
             firstname: this.firstName,
             lastname: this.lastName,
+          
         
               // label: "Optional string that replaces customer email"
             onClose: function(){
                 alert('Window closed.');
             },
             callback: function send(response){
-              
+                
                 let message = 'Payment complete! Reference: ' + response.reference;
                  return new Promise ((resolve, reject) => {
+                   a.$isLoading(true)
                   a.axios.post(a.api + "order/restaurant",{
                     payment : {
                       method : "Paystack"
@@ -142,7 +171,9 @@ export default {
                     reference : response.reference,
                     phone : a.telephone
                   }).then(response => {
-                    alert("Order Placed succesffully")
+                 
+                    a.isComplete = true
+                    a.$isLoading(false)
                   }).catch(e => {
                     console.log(e)
                   })
@@ -158,8 +189,12 @@ export default {
       let recaptchaScript = document.createElement('script')
       recaptchaScript.setAttribute('src', 'https://js.paystack.co/v1/inline.js')
       document.head.appendChild(recaptchaScript)
-      this.axios.get(this.api + "restaurants/" + window.id).then(response => {
+      this.$isLoading(true)
+      this.axios.get(this.api + "restaurants/" + window.id + "?with=categories").then(response => {
         this.restaurant_name = response.data.data.name
+        this.restaurant_telephone = response.data.data.phone
+        this.categories = response.data.data.categories
+        this.$isLoading(false)
       })
       this.$store.dispatch("getAllFoods")
     }
@@ -180,12 +215,21 @@ li {
   display: inline-block;
   margin: 0 10px;
 }
+.success-alert{
+  display: flex;
+  flex-direction: column;
+  margin : 5px;
+}
 a {
   color: #42b983;
+}
+.vue-form-wizard{
+  width: 100%;
 }
 .dinerr-widget{
   width: 600px;
   display: flex;
+  min-height: 300px;
   justify-content: center;
   align-items: center;
   height: 100%;

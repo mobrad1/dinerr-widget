@@ -11,6 +11,16 @@ import VModal from 'vue-js-modal'
 import Vuex from 'vuex'
 import { currency } from './currency'
 Vue.filter('currency', currency)
+import loading from 'vuejs-loading-screen'
+import '@fortawesome/fontawesome-free/css/all.css'
+import '@fortawesome/fontawesome-free/js/all.js'
+Vue.use(loading,{
+        bg: '#b8594159',
+        icon: 'spinner',
+        size: 2,
+        icon_color: 'white',
+    
+})
 var PaystackPop;
 
 

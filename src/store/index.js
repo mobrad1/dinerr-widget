@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-const api = "http://localhost:8000/api/"
+const api = "https://dev.partner.app/api/"
 Vue.use(Vuex);
 Vue.use(VueAxios, axios)
 
@@ -41,6 +41,9 @@ export default new Vuex.Store({
                 price
             })
         },
+        resetItems(state){
+            state.items = []
+        },
     
         setCartItems (state, { items }) {
             state.items = items
@@ -51,11 +54,15 @@ export default new Vuex.Store({
            })
         
            if (index !== -1) state.items.splice(index, 1);
+        },
+        updateFoods(state,foods){
+            state.foods = foods
         }
         
     },
     actions: {
         getAllFoods({commit}){
+            
             axios.get(api + "foods",{
                 params : {
                   with : "restaurant",
@@ -65,6 +72,20 @@ export default new Vuex.Store({
               }).then(response => {
                   commit('setFoods',response.data.data)
               })
+        },
+        updateAllFoods({commit},data){
+            axios.get(api + "foods",{
+                params : {
+                  with : "restaurant",
+                  search : `category_id:${data}`,
+                  searchField: "category_id:="
+                }
+              }).then(response => {
+                  commit('updateFoods',response.data.data)
+              })
+        },
+        resetItems({commit}){
+            commit("resetItems")
         },
         addFoodToCart ({ state, commit }, food) {
            
