@@ -90,7 +90,7 @@ export default {
   props : ["button"],
   data () {
     return {
-      api : "https://dev.partner.app/api/",
+      api : "https://dev.dinerr.app/api/",
       restaurant_name : "",
       email : "",
       firstName : "",
