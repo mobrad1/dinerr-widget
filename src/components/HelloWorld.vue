@@ -1,11 +1,12 @@
 <template>
   <div class="dinerr-widget">
-        <form-wizard :title="restaurant_name" subtitle="" v-if="!isComplete" step-size="xs" @on-complete="onComplete" finish-button-text="Pay & Finish" shape="tab" :start-index="index" >
-          <tab-content title="Order details" >
+        <form-wizard  :title="restaurant_name" subtitle="" color="#ff5800" v-if="!isComplete" step-size="xs" @on-complete="onComplete" finish-button-text="Pay & Finish" shape="tab" :start-index="index" >
+          <tab-content title="Order details" :before-change="beforeTabSwitch">
             <div class="form-group">
       
               <select v-model="category_id"  class="form-control" @change="updateFoods($event)">
-                <option disabled value="">Select a category</option>
+                <option value="" disabled>Select a category</option>
+                <option value="all">All Categories</option>
                 <option  v-for="category in categories" :key="category.id" :value="category.id">{{category.name}}</option>
               </select>
             </div>
@@ -59,13 +60,15 @@
                
               </div>
           </tab-content>
-        
+           <div v-if="errorMsg">
+            <span class="error">{{errorMsg}}</span>
+          </div>
           <div>Total Price {{total | currency}} </div>
       </form-wizard>
       <div class="success-alert" v-if="isComplete">
           <h4 class="m-2">Order Placed successfully</h4>
-          <button class="btn btn-primary" @click="resetForm">Order Again</button>
-          <p class="m-2 text-center">Telephone : <a :href="'tel:' + restaurant_telephone">  {{restaurant_telephone}}</a></p>
+          <button class="btn btn-dinerr" @click="resetForm">Order Again</button>
+          <p class="m-2 text-center">Vendor contact : <a :href="'tel:' + restaurant_telephone">  {{restaurant_telephone}}</a></p>
       </div>
    
   </div>
@@ -92,6 +95,7 @@ export default {
     return {
       api : "https://dev.dinerr.app/api/",
       restaurant_name : "",
+      errorMsg : null,
       email : "",
       firstName : "",
       lastName : "",
@@ -124,12 +128,21 @@ export default {
         hide () {
             this.$modal.hide('order-modal');
         },
+        beforeTabSwitch: function(){
+          if(this.total > 0){
+            this.errorMsg = null
+            return true
+          }
+          this.errorMsg = "Item must be selected"
+          return false;
+        },
         getImage(media){
           if(media.length > 0){
              return media[0].url
           }
           return "../assets/logo.png"
         },
+       
         resetForm(){
           this.isComplete = false;
           this.index = 0
@@ -138,6 +151,7 @@ export default {
           this.$isLoading(false)
         },
         updateFoods(event){
+         
           this.$store.dispatch("updateAllFoods",event.target.value)
         },
         onComplete(){
@@ -223,6 +237,9 @@ li {
 a {
   color: #42b983;
 }
+.error{
+  color: red;
+}
 .vue-form-wizard{
   width: 100%;
 }
@@ -234,6 +251,10 @@ a {
   align-items: center;
   height: 100%;
   box-shadow:  #cccccc 5px 20px 15px 0px;
+}
+.btn-dinerr{
+  color: white;
+  background: #ff5800;
 }
 .food-holder{
   display: flex;
@@ -256,7 +277,7 @@ a {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: red;
+  background: ff5800;
   border-radius: 5px;
 }
 

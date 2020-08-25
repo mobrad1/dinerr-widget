@@ -74,6 +74,18 @@ export default new Vuex.Store({
               })
         },
         updateAllFoods({commit},data){
+            if(data == "all"){
+                axios.get(api + "foods",{
+                    params : {
+                      with : "restaurant",
+                      search : `restaurant_id:${window.id}`,
+                      searchField: "restaurant.id:="
+                    }
+                  }).then(response => {
+                      commit('setFoods',response.data.data)
+                  })
+                  return
+            }
             axios.get(api + "foods",{
                 params : {
                   with : "restaurant",
