@@ -18,6 +18,16 @@
             </div>
             
           </tab-content>
+          <tab-content title="Delivery Details" :before-change="beforeDeliverySwitch">
+              <div class="form-group">
+                <label for="delivery-time">Delivery Time</label>
+                <datetime v-model="delivery_time" :min-datetime="getMinDate" input-style="width:100%;border: 1px solid #ced4da;padding:.375rem .75rem;color:#495057;" type="datetime" :minute-step="30"></datetime>
+              </div>
+              <div class="form-group">
+                <label for="note">Note</label>
+                <textarea v-model="note" cols="30" rows="10" class="form-control" placeholder="Enter extra note for orders"></textarea>
+              </div>
+          </tab-content>
           <tab-content title="Personal Details">
               <div class="form-row">
                 <div class="form-group col-md-6">
@@ -66,9 +76,9 @@
           <div>Total Price {{total | currency}} </div>
       </form-wizard>
       <div class="success-alert" v-if="isComplete">
-          <h4 class="m-2">Order Placed successfully</h4>
+          <h4 class="m-2">Order Placed Successfully</h4>
           <button class="btn btn-dinerr" @click="resetForm">Order Again</button>
-          <p class="m-2 text-center">Vendor contact : <a :href="'tel:' + restaurant_telephone">  {{restaurant_telephone}}</a></p>
+          <p class="m-2 text-center">Vendor Contact : <a :href="'tel:' + restaurant_telephone" style="color:blue">  {{restaurant_telephone}}</a></p>
       </div>
    
   </div>
@@ -76,19 +86,23 @@
 <script src=""></script> 
 <script>
 import {FormWizard, TabContent} from 'vue-form-wizard'
+import { Datetime } from 'vue-datetime'
 import FoodCard  from './FoodCard.vue';
-
+import moment from 'moment'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+import 'vue-datetime/dist/vue-datetime.css'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'HelloWorld',
+  template: '...',
   components: {
     FormWizard,
     TabContent,
-    FoodCard
+    FoodCard,
+    datetime: Datetime
   },
   props : ["button"],
   data () {
@@ -108,7 +122,10 @@ export default {
       isComplete : false,
       categories : [],
       category_id : '',
-      index : 0
+      delivery_time : '',
+      index : 0,
+      lead_time : '',
+      note : ''
     }
   },
   computed: {
@@ -118,7 +135,12 @@ export default {
     }),
     ...mapGetters({
       total: 'cartTotalPrice'
-    })
+    }),
+    getMinDate(){
+      var dt = moment().add(this.lead_time,"hours").format()
+      return dt;
+    }
+
   },
    methods: {
        
@@ -133,8 +155,17 @@ export default {
             this.errorMsg = null
             return true
           }
-          this.errorMsg = "Item must be selected"
+          this.errorMsg = "Please select an item"
           return false;
+        },
+        beforeDeliverySwitch(){
+          if(this.delivery_time == ""){
+            this.errorMsg = "Please select delivery time"
+            return false
+
+          }
+          this.errorMsg = null
+          return true
         },
         getImage(media){
           if(media.length > 0){
@@ -183,9 +214,11 @@ export default {
                     name : a.firstName + " " + a.lastName,
                     address : a.address,
                     reference : response.reference,
-                    phone : a.telephone
+                    phone : a.telephone,
+                    note : a.note,
+                    delivery_time : a.delivery_time
                   }).then(response => {
-                 
+                
                     a.isComplete = true
                     a.$isLoading(false)
                   }).catch(e => {
@@ -208,6 +241,7 @@ export default {
         this.restaurant_name = response.data.data.name
         this.restaurant_telephone = response.data.data.phone
         this.categories = response.data.data.categories
+        this.lead_time = response.data.data.lead_time
         this.$isLoading(false)
       })
       this.$store.dispatch("getAllFoods")
