@@ -107,7 +107,7 @@ export default {
   props : ["button"],
   data () {
     return {
-      api : "https://dev.dinerr.app/api/",
+      api : "http://localhost:8000/api/",
       restaurant_name : "",
       errorMsg : null,
       email : "",
@@ -276,6 +276,12 @@ a {
 }
 .vue-form-wizard{
   width: 100%;
+}
+.vdatetime-popup__header {
+    background: #ff5800 !important;
+}
+.vdatetime-calendar__month__day--selected:hover>span>span, .vdatetime-calendar__month__day--selected>span>span{
+   background: #ff5800 !important;
 }
 .dinerr-widget{
   width: 600px;
