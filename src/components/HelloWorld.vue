@@ -22,7 +22,7 @@
               <div class="form-group">
                 <label for="delivery-time">Delivery Time</label>
                 <!-- <datetime v-model="delivery_time" class="theme-orange" @input="checkAvailibility($event)" :min-datetime="getMinDate" input-style="width:100%;border: 1px solid #ced4da;padding:.375rem .75rem;color:#495057;" type="datetime" :minute-step="30"></datetime> -->
-                <VueCtkDateTimePicker button-color="#ff5800" color="#ff5800" :min-date="getMinDate" :disabled-dates="getOpenings" minute-interval="30" v-model="delivery_time" />
+                <VueCtkDateTimePicker no-button-now="true" button-color="#ff5800" color="#ff5800" :min-date="getMinDate" :disabled-dates="getOpenings" minute-interval="30" v-model="delivery_time" />
               </div>
               <div class="form-group">
                 <label for="note">Note</label>
