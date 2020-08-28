@@ -20,6 +20,7 @@
     "popper.js": "^1.16.1",
     "vue": "^2.5.2",
     "vue-axios": "^2.1.5",
+    "vue-ctk-date-time-picker": "^2.5.0",
     "vue-custom-element": "^3.2.14",
     "vue-datetime": "^1.0.0-beta.14",
     "vue-form-wizard": "^0.8.4",
@@ -27,6 +28,8 @@
     "vue-loaders": "^4.0.0",
     "vue-paystack": "^2.0.3",
     "vue-router": "^3.0.1",
+    "vue-vanilla-datetime-picker": "^1.1.15",
+    "vue2-datepicker": "^3.6.2",
     "vuejs-loading-screen": "^1.0.8",
     "vuex": "^3.5.1",
     "weekstart": "^1.0.1"
