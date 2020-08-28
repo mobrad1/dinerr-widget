@@ -90,8 +90,6 @@
 import {FormWizard, TabContent} from 'vue-form-wizard'
 import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
-import { Datetime } from 'vue-datetime'
-import 'vue-datetime/dist/vue-datetime.css'
 import FoodCard  from './FoodCard.vue';
 import moment from 'moment'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
@@ -106,7 +104,7 @@ export default {
     FormWizard,
     TabContent,
     FoodCard,
-    datetime: Datetime,
+   
     VueCtkDateTimePicker: VueCtkDateTimePicker
   },
   props : ["button"],
@@ -564,16 +562,11 @@ export default {
         beforeDeliverySwitch(){
           if(this.delivery_time == ""){
             this.errorMsg = "Please select delivery time"
-            this.canSwitch = false;
-            return this.canSwitch
+            return false
           }
-          if(this.delivery_time != "" && this.canSwitch == false){
-            this.errorMsg = "Choose another delivery date"
-            this.canSwitch = false;
-            return this.canSwitch
-          }
+         
           this.errorMsg = null
-          return this.canSwitch
+          return true
         },
         checkAvailibility(event){
           if(this.openings != null){
