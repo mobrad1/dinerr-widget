@@ -19,11 +19,22 @@
             
           </tab-content>
           <tab-content title="Delivery Details" :before-change="beforeDeliverySwitch">
-              <div class="form-group">
-                <label for="delivery-time">Delivery Time</label>
-                <!-- <datetime v-model="delivery_time" class="theme-orange" @input="checkAvailibility($event)" :min-datetime="getMinDate" input-style="width:100%;border: 1px solid #ced4da;padding:.375rem .75rem;color:#495057;" type="datetime" :minute-step="30"></datetime> -->
-                <VueCtkDateTimePicker no-button-now="true" button-color="#ff5800" color="#ff5800" :min-date="getMinDate" :disabled-dates="getOpenings" minute-interval="30" v-model="delivery_time" />
-              </div>
+              
+                <div class="form-row">
+                  <div class="col">
+                       <div class="form-group">
+                           <label for="delivery-time">Delivery Date</label>
+                           <VueCtkDateTimePicker :only-date="true" @input="getDate($event)" format="DD-MM-YYYY" formatted="ll" label="Select Date" :no-button-now="true" button-color="#ff5800" color="#ff5800" :min-date="getMinDate"  :disabled-dates="getOpenings"  v-model="date" /> 
+                       </div> 
+                  </div>
+                  <div class="col">
+                       <div class="form-group">
+                           <label for="delivery-time">Delivery Time</label>
+                           <VueCtkDateTimePicker id="TimePicker" :disabled-hours="disabledTimes"  :only-time="true" format="HH:mm" formatted="HH:mm" label="Select Time" :no-button-now="true" button-color="#ff5800" color="#ff5800"   minute-interval="30" v-model="time" /> 
+                       </div> 
+                  </div>
+                </div>
+               
               <div class="form-group">
                 <label for="note">Note</label>
                 <textarea v-model="note" cols="30" rows="10" class="form-control" placeholder="Enter extra note for orders"></textarea>
@@ -104,7 +115,6 @@ export default {
     FormWizard,
     TabContent,
     FoodCard,
-   
     VueCtkDateTimePicker: VueCtkDateTimePicker
   },
   props : ["button"],
@@ -126,11 +136,15 @@ export default {
       categories : [],
       category_id : '',
       delivery_time : '',
+      date: '',
+      time: '',
       index : 0,
       lead_time : '',
       note : '',
       openings : null,
       canSwitch : false,
+      disabledTimes : [],
+      isDisabled : true,
       days : {
         sunday : [
             "2020-08-30",
@@ -551,6 +565,12 @@ export default {
         hide () {
             this.$modal.hide('order-modal');
         },
+        getDate(event){
+            
+            let dayInt = moment(event,"DD-MM-YYYY").weekday()
+            this.getOpeningHours(this.openings[this.dayName(dayInt)])
+            console.log(this.dayName(dayInt))
+        },
         beforeTabSwitch: function(){
           if(this.total > 0){
             this.errorMsg = null
@@ -559,32 +579,61 @@ export default {
           this.errorMsg = "Please select an item"
           return false;
         },
+        getOpeningHours(hours){
+            let newHours = hours.split("-")
+            let newRoundUps = []
+            for(var i = 0; i < newHours.length ; i ++){
+              let m = moment(newHours[i],"H:mm")
+              var roundUp = m.minute() || m.second() || m.millisecond() ? m.add(1, 'hour').startOf('hour') : m.startOf('hour');
+              newRoundUps.push(roundUp.format("H:mm").replace(":00",""))
+            }
+            let lowEnd = parseInt(newRoundUps[0]) + parseInt(this.lead_time)
+            let highEnd = parseInt(newRoundUps[1])
+            let closings = [];
+            
+            for(var i = lowEnd; i <= highEnd; i++){
+              closings.push(i)
+            }
+          
+            let stringClosings = closings.map(function(e){ 
+                return e.toString() 
+            })
+            console.log(stringClosings)
+            let times = ['00','01','02','03','04','05','06','07','08','09',,'10','11','12','13','14','15','16','17','18','19','20','21','22','23','24']
+            let closingTime = times.filter((time) => !stringClosings.includes(time));
+
+            this.disabledTimes = closingTime;
+            
+        },
         beforeDeliverySwitch(){
           if(this.delivery_time == ""){
             this.errorMsg = "Please select delivery time"
             return false
           }
-         
+        
           this.errorMsg = null
           return true
         },
-        checkAvailibility(event){
-          if(this.openings != null){
-            let object = this.openings
-            var dayName = this.dayName(moment(event).weekday())
-            console.log(dayName)
-            if(this.getIfOpened(dayName) == true){
-              this.canSwitch = true
-              return this.canSwitch
-            }
-            this.errorMsg = "Restaurant Closed on " + dayName
-            this.canSwitch = false
-            return false
-          }
-           
-        },
         dayName(num){
-         
+          switch (num) {
+            case 0:
+              return "sunday"
+              break;
+            case 1:
+              return "monday"
+            case 2:
+              return "tuesday"
+            case 3:
+              return "wednesday"
+            case 4:
+              return "thursday"
+            case 5:
+              return "friday"
+            case 6:
+              return "saturday"
+            default:
+              break;
+          }
         },
        
         getImage(media){
