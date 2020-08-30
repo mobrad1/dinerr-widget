@@ -24,7 +24,7 @@
                   <div class="col">
                        <div class="form-group">
                            <label for="delivery-time">Delivery Date</label>
-                           <VueCtkDateTimePicker :only-date="true" @input="getDate($event)" format="DD-MM-YYYY" formatted="ll" label="Select Date" :no-button-now="true" button-color="#ff5800" color="#ff5800" :min-date="getMinDate"  :disabled-dates="getOpenings"  v-model="date" /> 
+                           <VueCtkDateTimePicker :only-date="true" @input="getDate($event)" format="YYYY-MM-DD" formatted="ll" label="Select Date" :no-button-now="true" button-color="#ff5800" color="#ff5800" :min-date="getMinDate"  :disabled-dates="getOpenings"  v-model="date" /> 
                        </div> 
                   </div>
                   <div class="col">
@@ -567,7 +567,7 @@ export default {
         },
         getDate(event){
             
-            let dayInt = moment(event,"DD-MM-YYYY").weekday()
+            let dayInt = moment(event,"YYYY-MM-DD").weekday()
             this.getOpeningHours(this.openings[this.dayName(dayInt)])
             console.log(this.dayName(dayInt))
         },
