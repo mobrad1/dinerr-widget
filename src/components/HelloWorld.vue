@@ -606,7 +606,7 @@ export default {
             
         },
         beforeDeliverySwitch(){
-          if(this.delivery_time == ""){
+          if(this.date == "" && this.time == ""){
             this.errorMsg = "Please select delivery time"
             return false
           }
@@ -685,7 +685,7 @@ export default {
                     reference : response.reference,
                     phone : a.telephone,
                     note : a.note,
-                    delivery_time : a.delivery_time
+                    delivery_time : a.date + " " + a.time
                   }).then(response => {
                 
                     a.isComplete = true
