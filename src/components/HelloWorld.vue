@@ -1,7 +1,7 @@
 <template>
   <div class="dinerr-widget">
         <form-wizard  :title="restaurant_name" subtitle="" color="#ff5800" v-if="!isComplete" step-size="xs" @on-complete="onComplete" finish-button-text="Pay & Finish" shape="tab" :start-index="index" >
-          <tab-content title="Order details" :before-change="beforeTabSwitch">
+          <tab-content title="Order Details" :before-change="beforeTabSwitch">
             <div class="form-group">
       
               <select v-model="category_id"  class="form-control" @change="updateFoods($event)">
@@ -68,15 +68,19 @@
               </div>
             
               <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label for="inputCity">City</label>
-                  <input type="text" class="form-control" v-model="city" id="inputCity">
-                </div>
+                
                 <div class="form-group col-md-6">
                   <label for="inputState">State</label>
-                  <select id="inputState" class="form-control" v-model="state">
-                    <option selected>Choose...</option>
-                    <option>Lagos</option>
+                  <select id="inputState" class="form-control" v-model="state" @change="selectArea($event)">
+                    <option value="">Select your city</option>
+                    <option value="Lagos">Lagos</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="inputCity">Area</label>
+                  <select class="form-control" v-model="city" :disabled="areaDisabled">
+                    <option value="">Select area</option>
+                    <option v-for="(area,index) in selectAreas" :key="index">{{area}}</option>
                   </select>
                 </div>
                
@@ -120,7 +124,7 @@ export default {
   props : ["button"],
   data () {
     return {
-      api : "https://dev.dinerr.app/api/",
+      api : "http://localhost:8000/api/",
       restaurant_name : "",
       errorMsg : null,
       email : "",
@@ -145,6 +149,86 @@ export default {
       canSwitch : false,
       disabledTimes : [],
       isDisabled : true,
+      selectAreas: [],
+      areaDisabled: true,
+      areas : {
+        "Lagos" : [
+          "Abraham Adesanya Estate",
+          "Abule Egba",
+          "Ago",
+          "Ajah",
+          "Ajao Estate",
+          "Ajegunle",
+          "Akoka",
+          "Amuwo Odofin",
+          "Anthony",
+          "Apapa",
+          "Badore",
+          "Banana Island",
+          "Dolphin Estate",
+          "Dopemu",
+          "Egbeda",
+          "Ejigbo",
+          "Eko Atlantic City",
+          "Fadeyi",
+          "Festac Town",
+          "Gbagada",
+          "Gowon Estate",
+          "Idimu",
+          "Ifako Agege",
+          "Igbo Efon",
+          "Ijaye",
+          "Ijegun",
+          "Ikeja",
+          "Ikorodu",
+          "Ikota",
+          "Ikoyi",
+          "Ilupeju",
+          "Ipaja",
+          "Ire Akari",
+          "Jakande - Isheri",
+          "Jibowu - Fadeyi",
+          "Julius Berger Quarry",
+          "Ketu",
+          "Lagos Island",
+          "LCC",
+          "Lekki - Chevron",
+          "Lekki - Elegushi",
+          "Lekki - Jakande",
+          "Lekki - 4th and 5th Roundabout",
+          "Lekki Elf",
+          "Lekki Phase 1",
+          "Lagali Ayorinde",
+          "Magbon",
+          "Magodo Phase 1",
+          "Magodo Phase 2",
+          "Marina",
+          "Novare Lekki Mall",
+          "Obalende",
+          "Obanikoro",
+          "Ogba",
+          "Ogudu",
+          "Oke Afa",
+          "Oke Odo",
+          "Oke-Ira Nla Ajah",
+          "Oko Oba",
+          "Okota",
+          "Oluwaninshola",
+          "Omole",
+          "Onike",
+          "Oniru",
+          "Orile - Iganmu",
+          "Orile Agege",
+          "Oshodi Isolo",
+          "Royal Garden Estate",
+          "Sangotedo",
+          "Satellite Town",
+          "Surulere",
+          "VGC",
+          "Victoria Island",
+          "Yaba",
+        ]
+      },
       days : {
         sunday : [
             "2020-08-30",
@@ -579,13 +663,18 @@ export default {
           this.errorMsg = "Please select an item"
           return false;
         },
+        selectArea(event){
+          this.areaDisabled = false
+         this.selectAreas = this.areas[event.target.value]
+        },
         getOpeningHours(hours){
             let newHours = hours.split("-")
             let newRoundUps = []
             for(var i = 0; i < newHours.length ; i ++){
               let m = moment(newHours[i],"H:mm")
-              var roundUp = m.minute() || m.second() || m.millisecond() ? m.add(1, 'hour').startOf('hour') : m.startOf('hour');
-              newRoundUps.push(roundUp.format("H:mm").replace(":00",""))
+              var roundDown = m.startOf('hour');
+              // var roundUp = m.minute() || m.second() || m.millisecond() ? m.add(1, 'hour').startOf('hour') : m.startOf('hour');
+              newRoundUps.push(roundDown.format("H:mm").replace(":00",""))
             }
             let lowEnd = parseInt(newRoundUps[0]) + parseInt(this.lead_time)
             let highEnd = parseInt(newRoundUps[1])
