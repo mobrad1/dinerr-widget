@@ -30,7 +30,7 @@
                   <div class="col">
                        <div class="form-group">
                            <label for="delivery-time">Delivery Time</label>
-                           <VueCtkDateTimePicker id="TimePicker" :disabled-hours="disabledTimes"  :only-time="true" format="HH:mm" formatted="HH:mm" label="Select Time" :no-button-now="true" button-color="#ff5800" color="#ff5800"   minute-interval="30" v-model="time" /> 
+                           <VueCtkDateTimePicker id="TimePicker" :disabled-hours="disabledTimes"  :only-time="true" format="HH:mm" formatted="HH:mm" label="Select Time" :no-button-now="true" button-color="#ff5800" color="#ff5800" :max-date="getMinDate"  minute-interval="30" v-model="time" /> 
                        </div> 
                   </div>
                 </div>
@@ -79,7 +79,7 @@
                 <div class="form-group col-md-6">
                   <label for="inputCity">Area</label>
                   <select class="form-control" v-model="city" :disabled="areaDisabled">
-                    <option value="">Select area</option>
+                    <option value="">Select your area</option>
                     <option v-for="(area,index) in selectAreas" :key="index">{{area}}</option>
                   </select>
                 </div>
@@ -664,7 +664,7 @@ export default {
           return false;
         },
         selectArea(event){
-          this.areaDisabled = false
+         this.areaDisabled = false
          this.selectAreas = this.areas[event.target.value]
         },
         getOpeningHours(hours){
@@ -687,8 +687,7 @@ export default {
             let stringClosings = closings.map(function(e){ 
                 return e.toString() 
             })
-            console.log(stringClosings)
-            let times = ['00','01','02','03','04','05','06','07','08','09',,'10','11','12','13','14','15','16','17','18','19','20','21','22','23','24']
+            let times = ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24']
             let closingTime = times.filter((time) => !stringClosings.includes(time));
 
             this.disabledTimes = closingTime;
@@ -770,7 +769,7 @@ export default {
                     foods : a.items,
                     email : a.email,
                     name : a.firstName + " " + a.lastName,
-                    address : a.address,
+                    address : a.address + " ," + a.city + "," + a.state,
                     reference : response.reference,
                     phone : a.telephone,
                     note : a.note,
@@ -832,7 +831,7 @@ a {
 }
 .error{
   color: red;
-  text-transform: capitalize;
+  
 }
 .vue-form-wizard{
   width: 100%;
