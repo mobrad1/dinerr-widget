@@ -1,6 +1,20 @@
 <template>
   <div class="dinerr-widget">
-        <form-wizard  :title="restaurant_name" subtitle="" color="#ff5800" v-if="!isComplete" step-size="xs" @on-complete="onComplete" finish-button-text="Pay & Finish" shape="tab" :start-index="index" >
+        <form-wizard  :title="restaurant_name" subtitle="" color="#ff5800" v-if="!isComplete" step-size="xs" @on-change="getIndex" @on-complete="onComplete" @on-validate="handleValidation" finish-button-text="Pay & Finish" shape="tab" :start-index="index" >
+          <tab-content title="Dining Options">
+          
+              <div class="row">
+                  <div class="col-md-12">
+                        <label>Delivery</label> 
+                        <input type="radio" class="mr-2" name="dine-in" v-model="dinein" value="delivery">
+                        <label v-if="restaurant.dine_in == 1">Takeout</label> 
+                        <input v-if="restaurant.dine_in == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="takeout">
+                        <label v-if="restaurant.takeout == 1">Dine in</label> 
+                        <input v-if="restaurant.takeout == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="dinein">
+                  </div>
+              </div>  
+            
+          </tab-content>
           <tab-content title="Order Details" :before-change="beforeTabSwitch">
             <div class="form-group">
       
@@ -59,12 +73,25 @@
                 </div>
                 <div class="form-group col-md-6">
                   <label for="telephone">Telephone</label>
+                  
                   <input type="text" class="form-control" id="telephone" v-model="telephone" placeholder="Please Enter Telephone">
                 </div>
               </div>
               <div class="form-group">
                 <label for="inputAddress">Address</label>
-                <input type="text" class="form-control" v-model="address" id="inputAddress" placeholder="1234 Main St">
+                 <gmap-autocomplete class="introInput form-control" >
+                    <template v-slot:input="slotProps">
+                        <v-text-field outlined
+                                      prepend-inner-icon="place"
+                                      placeholder="Location Of Event"
+                                      ref="input"
+                                      v-model="address"
+                                      v-on:listeners="slotProps.listeners"
+                                      v-on:attrs="slotProps.attrs">
+                        </v-text-field>
+                    </template>
+                </gmap-autocomplete>
+                <!-- <input type="text" class="form-control" v-model="address" id="inputAddress" placeholder="1234 Main St"> -->
               </div>
             
               <div class="form-row">
@@ -78,7 +105,7 @@
                 </div>
                 <div class="form-group col-md-6">
                   <label for="inputCity">Area</label>
-                  <select class="form-control" v-model="city" :disabled="areaDisabled">
+                  <select class="form-control" v-model="city"  @change="calculatePrice($event)">
                     <option value="">Select your area</option>
                     <option v-for="(area,index) in selectAreas" :key="index">{{area}}</option>
                   </select>
@@ -89,7 +116,8 @@
            <div v-if="errorMsg">
             <span class="error">{{errorMsg}}</span>
           </div>
-          <div>Total Price {{total | currency}} </div>
+          <div v-show="showPrices">Total Price {{total | currency}} </div>
+          <div v-show="showPrices">Delivery Fee {{delivery_fee | currency }}</div>
       </form-wizard>
       <div class="success-alert" v-if="isComplete">
           <h3 class="m-2 text-center">{{restaurant_name}}</h3>
@@ -126,6 +154,7 @@ export default {
     return {
       api : "http://localhost:8000/api/",
       restaurant_name : "",
+      restaurant : {},
       errorMsg : null,
       email : "",
       firstName : "",
@@ -140,93 +169,43 @@ export default {
       categories : [],
       category_id : '',
       delivery_time : '',
+      showPrices : false,
       date: '',
       time: '',
       index : 0,
+      newIndex : "",
       lead_time : '',
       note : '',
       openings : null,
       canSwitch : false,
       disabledTimes : [],
+      delivery_fee : 0,
       isDisabled : true,
       selectAreas: [],
       areaDisabled: true,
+      dinein : "",
       areas : {
         "Lagos" : [
-          "Abraham Adesanya Estate",
-          "Abule Egba",
-          "Ago",
-          "Ajah",
-          "Ajao Estate",
-          "Ajegunle",
-          "Akoka",
-          "Amuwo Odofin",
-          "Anthony",
-          "Apapa",
-          "Badore",
-          "Banana Island",
-          "Dolphin Estate",
-          "Dopemu",
-          "Egbeda",
-          "Ejigbo",
-          "Eko Atlantic City",
-          "Fadeyi",
-          "Festac Town",
-          "Gbagada",
-          "Gowon Estate",
-          "Idimu",
-          "Ifako Agege",
-          "Igbo Efon",
-          "Ijaye",
-          "Ijegun",
-          "Ikeja",
-          "Ikorodu",
-          "Ikota",
-          "Ikoyi",
-          "Ilupeju",
-          "Ipaja",
-          "Ire Akari",
-          "Jakande - Isheri",
-          "Jibowu - Fadeyi",
-          "Julius Berger Quarry",
-          "Ketu",
-          "Lagos Island",
-          "LCC",
-          "Lekki - Chevron",
-          "Lekki - Elegushi",
-          "Lekki - Jakande",
-          "Lekki - 4th and 5th Roundabout",
-          "Lekki Elf",
-          "Lekki Phase 1",
-          "Lagali Ayorinde",
-          "Magbon",
-          "Magodo Phase 1",
-          "Magodo Phase 2",
-          "Marina",
-          "Novare Lekki Mall",
-          "Obalende",
-          "Obanikoro",
-          "Ogba",
-          "Ogudu",
-          "Oke Afa",
-          "Oke Odo",
-          "Oke-Ira Nla Ajah",
-          "Oko Oba",
-          "Okota",
-          "Oluwaninshola",
-          "Omole",
-          "Onike",
-          "Oniru",
-          "Orile - Iganmu",
-          "Orile Agege",
-          "Oshodi Isolo",
-          "Royal Garden Estate",
-          "Sangotedo",
-          "Satellite Town",
-          "Surulere",
-          "VGC",
-          "Victoria Island",
-          "Yaba",
+           "Agege",
+            "Ajeromi-Ifelodun",
+            "Alimosho",
+            "Amuwo-Odofin",
+            "Apapa",
+            "Badagry",
+            "Epe",
+            "Eti Osa",
+            "Ibeju-Lekki",
+            "Ifako-Ijaiye",
+            "Ikeja",
+            "Ikorodu",
+            "Kosofe",
+            "Lagos Island",
+            "Lagos Mainland",
+            "Mushin",
+            "Ojo",
+            "Oshodi-Isolo",
+            "Shomolu",
+            "Surulere"
         ]
       },
       days : {
@@ -613,7 +592,6 @@ export default {
         ]
       },
       allDisabled:[]
-      
     }
   },
   computed: {
@@ -663,9 +641,21 @@ export default {
           this.errorMsg = "Please select an item"
           return false;
         },
+        getIndex(prev,next){
+          if(next > 0){
+            this.showPrices = true
+          }
+        },
         selectArea(event){
          this.areaDisabled = false
          this.selectAreas = this.areas[event.target.value]
+        },
+        calculatePrice(event){
+          this.axios.post(this.api + `calculate/price/${window.id}`,{
+            lga_name : event.target.value
+          }).then(e => {
+           this.delivery_fee = e.data
+          })
         },
         getOpeningHours(hours){
             let newHours = hours.split("-")
@@ -702,6 +692,7 @@ export default {
           this.errorMsg = null
           return true
         },
+       
         dayName(num){
           switch (num) {
             case 0:
@@ -739,10 +730,16 @@ export default {
           this.$isLoading(false)
         },
         updateFoods(event){
-          
           this.$store.dispatch("updateAllFoods",event.target.value)
         },
+        handleValidation: function(isValid, tabIndex){
+           console.log('Tab: '+tabIndex+ ' valid: '+isValid)
+        },
         onComplete(){
+            if(this.delivery_fee == 0){
+              this.errorMsg = "Select a valid area"
+              return false
+            }
             let a = this;
             let handler = PaystackPop.setup({
             key: 'pk_test_636c9a1c3f12f53b7812c201cc3abd07432eda85', // Replace with your public key
@@ -750,8 +747,6 @@ export default {
             amount: this.total * 100,
             firstname: this.firstName,
             lastname: this.lastName,
-          
-        
               // label: "Optional string that replaces customer email"
             onClose: function(){
                 alert('Window closed.');
@@ -773,7 +768,8 @@ export default {
                     reference : response.reference,
                     phone : a.telephone,
                     note : a.note,
-                    delivery_time : a.date + " " + a.time
+                    delivery_time : a.date + " " + a.time,
+                    delivery_fee : a.delivery_fee
                   }).then(response => {
                 
                     a.isComplete = true
@@ -796,6 +792,7 @@ export default {
       this.$isLoading(true)
       this.axios.get(this.api + "restaurants/" + window.id + "?with=categories").then(response => {
         this.restaurant_name = response.data.data.name
+        this.restaurant = response.data.data
         this.restaurant_telephone = response.data.data.phone
         this.categories = response.data.data.categories
         this.lead_time = response.data.data.lead_time
