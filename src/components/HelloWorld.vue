@@ -1,16 +1,16 @@
 <template>
   <div class="dinerr-widget">
-        <form-wizard  :title="restaurant_name" subtitle="" color="#ff5800" v-if="!isComplete" step-size="xs" @on-change="getIndex" @on-complete="onComplete" @on-validate="handleValidation" finish-button-text="Pay & Finish" shape="tab" :start-index="index" >
+        <form-wizard  :title="restaurant_name" subtitle="" color="#ff5800" v-if="!isComplete && restaurant.status == 1" step-size="xs" @on-change="getIndex" @on-complete="onComplete" @on-validate="handleValidation" finish-button-text="Pay & Finish" shape="tab" >
           <tab-content title="Dining Options">
           
               <div class="row">
                   <div class="col-md-12">
-                        <label>Delivery</label> 
-                        <input type="radio" class="mr-2" name="dine-in" v-model="dinein" value="delivery">
-                        <label v-if="restaurant.dine_in == 1">Takeout</label> 
-                        <input v-if="restaurant.dine_in == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="takeout">
-                        <label v-if="restaurant.takeout == 1">Dine in</label> 
-                        <input v-if="restaurant.takeout == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="dinein">
+                        <label v-if="restaurant.delivery == 1">Delivery</label> 
+                        <input v-if="restaurant.delivery == 1" type="radio" class="mr-2" style="co" name="dine-in" v-model="dinein" value="delivery">
+                        <label v-if="restaurant.dine_in == 1">Dine in</label> 
+                        <input v-if="restaurant.dine_in == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="dine-in">
+                        <label v-if="restaurant.takeout == 1">Takeout</label> 
+                        <input v-if="restaurant.takeout == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="takeout">
                   </div>
               </div>  
             
@@ -30,11 +30,11 @@
               </food-card>
               
             </div>
-            
+            <div v-show="showPrices">Total Price {{total | currency}} </div>
+            <div v-show="showPrices && dinein == 'delivery'">Delivery Fee {{delivery_fee | currency }}</div>
           </tab-content>
-          <tab-content title="Delivery Details" :before-change="beforeDeliverySwitch">
-              
-                <div class="form-row">
+          <tab-content title="Delivery Details" v-if="dinein == 'delivery'" :before-change="beforeDeliverySwitch">        
+              <div class="form-row">
                   <div class="col">
                        <div class="form-group">
                            <label for="delivery-time">Delivery Date</label>
@@ -47,14 +47,16 @@
                            <VueCtkDateTimePicker id="TimePicker" :disabled-hours="disabledTimes"  :only-time="true" format="HH:mm" formatted="HH:mm" label="Select Time" :no-button-now="true" button-color="#ff5800" color="#ff5800" :max-date="getMinDate"  minute-interval="30" v-model="time" /> 
                        </div> 
                   </div>
-                </div>
+              </div>
                
               <div class="form-group">
                 <label for="note">Note</label>
-                <textarea v-model="note" cols="30" rows="10" class="form-control" placeholder="Enter extra note for orders"></textarea>
+                <textarea v-model="note" cols="5" rows="5" class="form-control" placeholder="Enter extra note for orders"></textarea>
               </div>
+              <div v-show="showPrices">Total Price {{total | currency}} </div>
+              <div v-show="showPrices && dinein == 'delivery'">Delivery Fee {{delivery_fee | currency }}</div>
           </tab-content>
-          <tab-content title="Personal Details">
+           <tab-content title="Dine In Details" v-if="dinein == 'dine-in'">
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="first-name">First Name</label>
@@ -77,23 +79,83 @@
                   <input type="text" class="form-control" id="telephone" v-model="telephone" placeholder="Please Enter Telephone">
                 </div>
               </div>
-              <div class="form-group">
-                <label for="inputAddress">Address</label>
-                 <gmap-autocomplete class="introInput form-control" >
-                    <template v-slot:input="slotProps">
-                        <v-text-field outlined
-                                      prepend-inner-icon="place"
-                                      placeholder="Location Of Event"
-                                      ref="input"
-                                      v-model="address"
-                                      v-on:listeners="slotProps.listeners"
-                                      v-on:attrs="slotProps.attrs">
-                        </v-text-field>
-                    </template>
-                </gmap-autocomplete>
-                <!-- <input type="text" class="form-control" v-model="address" id="inputAddress" placeholder="1234 Main St"> -->
-              </div>
             
+               <div class="form-group">
+                 <label for="table">Table Number</label>
+                 <input type="text" class="form-control" placeholder="Enter Table number">
+               </div>
+              <div class="form-group">
+                <label for="note">Note</label>
+                <textarea v-model="note" cols="20" rows="5" class="form-control" placeholder="Enter extra note for orders"></textarea>
+              </div>
+              <div v-show="showPrices">Total Price {{total | currency}} </div>
+              <div v-show="showPrices && dinein == 'delivery'">Delivery Fee {{delivery_fee | currency }}</div>
+          </tab-content>
+          <tab-content title="Pick Up Details" v-if="dinein == 'takeout'">
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="first-name">First Name</label>
+                  <input type="text" class="form-control" id="first-name" v-model="firstName" placeholder="Please enter first name"/>
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="last-name">Last Name</label>
+                  <input type="text" class="form-control" id="last-name" v-model="lastName" placeholder="Please enter last name"/>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="inputEmail4">Email</label>
+                  <input type="email" class="form-control" v-model="email" id="inputEmail4" placeholder="Email">
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="telephone">Telephone</label>
+                  <input type="text" class="form-control" id="telephone" v-model="telephone" placeholder="Please Enter Telephone">
+                </div>
+              </div>
+              <div class="form-row">
+                  <div class="col">
+                       <div class="form-group">
+                           <label for="delivery-time">Pick Up Date</label>
+                           <VueCtkDateTimePicker :only-date="true" @input="getDate($event)" format="YYYY-MM-DD" formatted="ll" label="Select Date" :no-button-now="true" button-color="#ff5800" color="#ff5800" :min-date="getMinDate"  :disabled-dates="getOpenings"  v-model="date" /> 
+                       </div> 
+                  </div>
+                  <div class="col">
+                       <div class="form-group">
+                           <label for="delivery-time">Pick Up Time</label>
+                           <VueCtkDateTimePicker id="TimePicker" :disabled-hours="disabledTimes"  :only-time="true" format="HH:mm" formatted="HH:mm" label="Select Time" :no-button-now="true" button-color="#ff5800" color="#ff5800" :max-date="getMinDate"  minute-interval="30" v-model="time" /> 
+                       </div> 
+                  </div>
+              </div>            
+              <div class="form-group">
+                <label for="note">Note</label>
+                <textarea v-model="note" cols="5" rows="5" class="form-control" placeholder="Enter extra note for orders"></textarea>
+              </div>
+              <div v-show="showPrices">Total Price {{total | currency}} </div>
+              <div v-show="showPrices && dinein == 'delivery'">Delivery Fee {{delivery_fee | currency }}</div>
+          </tab-content>
+          <tab-content title="Personal Details" v-if="dinein == 'delivery'">
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="first-name">First Name</label>
+                  <input type="text" class="form-control" id="first-name" v-model="firstName" placeholder="Please enter first name"/>
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="last-name">Last Name</label>
+                  <input type="text" class="form-control" id="last-name" v-model="lastName" placeholder="Please enter last name"/>
+                </div>
+              </div>            
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="inputEmail4">Email</label>
+                  <input type="email" class="form-control" v-model="email" id="inputEmail4" placeholder="Email">
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="telephone">Telephone</label>
+                  
+                  <input type="text" class="form-control" id="telephone" v-model="telephone" placeholder="Please Enter Telephone">
+                </div>
+              </div>
               <div class="form-row">
                 
                 <div class="form-group col-md-6">
@@ -112,19 +174,39 @@
                 </div>
                
               </div>
+              <div class="form-group" v-if="disabled">
+                <label for="inputAddress">Address</label>
+                 <vue-google-autocomplete
+                    ref="address"
+                    id="map"
+                    classname="form-control"
+                    placeholder="Please type your address"
+                    v-on:placechanged="getCordinates"
+                    country="ng"
+                    
+                    
+                >
+                </vue-google-autocomplete>
+                <!-- <input type="text" class="form-control" v-model="address" id="inputAddress" placeholder="1234 Main St"> -->
+              </div>
+              
+              <div v-show="showPrices">Total Price {{total | currency}} </div>
+              <div v-show="showPrices && dinein == 'delivery'">Delivery Fee {{delivery_fee | currency }}</div>
           </tab-content>
            <div v-if="errorMsg">
             <span class="error">{{errorMsg}}</span>
           </div>
-          <div v-show="showPrices">Total Price {{total | currency}} </div>
-          <div v-show="showPrices">Delivery Fee {{delivery_fee | currency }}</div>
-      </form-wizard>
-      <div class="success-alert" v-if="isComplete">
+          
+       </form-wizard>
+       <div class="success-alert" v-if="isComplete && restaurant.status == 1">
           <h3 class="m-2 text-center">{{restaurant_name}}</h3>
           <h4 class="m-2 text-center">Order Placed Successfully</h4>
           <button class="btn btn-dinerr" @click="resetForm">Order Again</button>
-          <p class="m-2 text-center">Vendor Contact : <a :href="'tel:' + restaurant_telephone" style="color:blue">  {{restaurant_telephone}}</a></p>
-      </div>
+          <p class="m-2 text-center">Vendor Contact : <a :href="'tel:' + restaurant.mobile" style="color:blue">  {{restaurant.mobile}}</a></p>
+       </div>
+       <div v-if="restaurant.status == 0">
+         Restaurant is not live 
+       </div>
    
   </div>
 </template>
@@ -132,6 +214,7 @@
 <script>
 import {FormWizard, TabContent} from 'vue-form-wizard'
 import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
 import FoodCard  from './FoodCard.vue';
 import moment from 'moment'
@@ -147,6 +230,7 @@ export default {
     FormWizard,
     TabContent,
     FoodCard,
+    VueGoogleAutocomplete,
     VueCtkDateTimePicker: VueCtkDateTimePicker
   },
   props : ["button"],
@@ -183,7 +267,8 @@ export default {
       isDisabled : true,
       selectAreas: [],
       areaDisabled: true,
-      dinein : "",
+      dinein : "delivery",
+      disabled : false,
       areas : {
         "Lagos" : [
            "Agege",
@@ -620,7 +705,23 @@ export default {
       },
   },
    methods: {
-       
+        getCordinates(addressData, placeResultData, id){
+          this.address = addressData.route
+          this.$isLoading(true)
+          this.axios.post("https://api.gokada.ng/api/developer/order_estimate",{   
+            pickup_latitude : this.restaurant.latitude,
+            pickup_longitude: this.restaurant.longitude,
+            delivery_latitude: addressData.latitude,
+            delivery_longitude: addressData.longitude,
+            api_key : "RaS5PPEh2R6hKIkaV6lALtBa5721Bxk7Nov1WjQz3pgo8Xk9QrKalmOiJJyr_test"
+          }).then(e => {
+              if(this.delivery_fee == 0){
+                this.delivery_fee = e.data.fare
+              }
+              
+              this.$isLoading(false)
+          })
+        },
         show () {
             this.$modal.show('order-modal');
         },
@@ -628,7 +729,6 @@ export default {
             this.$modal.hide('order-modal');
         },
         getDate(event){
-            
             let dayInt = moment(event,"YYYY-MM-DD").weekday()
             this.getOpeningHours(this.openings[this.dayName(dayInt)])
             console.log(this.dayName(dayInt))
@@ -642,9 +742,14 @@ export default {
           return false;
         },
         getIndex(prev,next){
-          if(next > 0){
+          console.log(prev)
+          if(next > 0 || prev > 0){
             this.showPrices = true
           }
+          if(prev == 1){
+              return false
+          }
+          
         },
         selectArea(event){
          this.areaDisabled = false
@@ -655,6 +760,7 @@ export default {
             lga_name : event.target.value
           }).then(e => {
            this.delivery_fee = e.data
+           this.disabled = true
           })
         },
         getOpeningHours(hours){
@@ -736,15 +842,17 @@ export default {
            console.log('Tab: '+tabIndex+ ' valid: '+isValid)
         },
         onComplete(){
-            if(this.delivery_fee == 0){
+            
+            if(this.delivery_fee == 0 && this.dinein == "delivery"){
               this.errorMsg = "Select a valid area"
               return false
             }
+          
             let a = this;
             let handler = PaystackPop.setup({
             key: 'pk_test_636c9a1c3f12f53b7812c201cc3abd07432eda85', // Replace with your public key
             email: this.email,
-            amount: this.total * 100,
+            amount: (this.total + this.delivery_fee) * 100,
             firstname: this.firstName,
             lastname: this.lastName,
               // label: "Optional string that replaces customer email"
@@ -768,10 +876,10 @@ export default {
                     reference : response.reference,
                     phone : a.telephone,
                     note : a.note,
-                    delivery_time : a.date + " " + a.time,
+                    type : a.dinein,
+                    delivery_time : a.date + " " + a.time + ":00",
                     delivery_fee : a.delivery_fee
                   }).then(response => {
-                
                     a.isComplete = true
                     a.$isLoading(false)
                   }).catch(e => {
@@ -789,6 +897,7 @@ export default {
       let recaptchaScript = document.createElement('script')
       recaptchaScript.setAttribute('src', 'https://js.paystack.co/v1/inline.js')
       document.head.appendChild(recaptchaScript)
+     
       this.$isLoading(true)
       this.axios.get(this.api + "restaurants/" + window.id + "?with=categories").then(response => {
         this.restaurant_name = response.data.data.name
