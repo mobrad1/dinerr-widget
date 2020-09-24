@@ -858,6 +858,8 @@ export default {
             key: 'pk_test_636c9a1c3f12f53b7812c201cc3abd07432eda85', // Replace with your public key
             email: this.email,
             amount: (this.total + this.delivery_fee) * 100,
+            subaccount : restaurant.subaccount_code,
+            channels : ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
             firstname: this.firstName,
             lastname: this.lastName,
               // label: "Optional string that replaces customer email"
