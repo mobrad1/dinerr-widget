@@ -707,6 +707,7 @@ export default {
    methods: {
         getCordinates(addressData, placeResultData, id){
           this.address = addressData.route
+    
           this.$isLoading(true)
           this.axios.post("https://api.gokada.ng/api/developer/order_estimate",{   
             pickup_latitude : this.restaurant.latitude,
@@ -720,6 +721,8 @@ export default {
               }
               
               this.$isLoading(false)
+          }).catch(e => {
+            this.$isLoading(false)
           })
         },
         show () {
@@ -756,10 +759,12 @@ export default {
          this.selectAreas = this.areas[event.target.value]
         },
         calculatePrice(event){
+            this.$isLoading(true)
           this.axios.post(this.api + `calculate/price/${window.id}`,{
             lga_name : event.target.value
           }).then(e => {
            this.delivery_fee = e.data
+             this.$isLoading(false)
            this.disabled = true
           })
         },
