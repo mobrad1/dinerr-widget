@@ -1,7 +1,7 @@
 <template>
   <div class="dinerr-widget">
-        <form-wizard  :title="restaurant_name" subtitle="" color="#ff5800" v-if="!isComplete && restaurant.status == 1" step-size="xs" @on-change="getIndex" @on-complete="onComplete" @on-validate="handleValidation" finish-button-text="Pay & Finish" shape="tab" >
-          <tab-content title="Dining Options">
+        <form-wizard  :title="restaurant_name" subtitle="" color="#ff5800" v-if="!isComplete && restaurant.status == 1" step-size="xs" @on-change="getIndex" @on-complete="onComplete" @on-validate="handleValidation" finish-button-text="Pay & Finish" shape="circle" >
+          <tab-content icon="ti-notepad">
           
               <div class="row">
                   <div class="col-md-12">
@@ -15,7 +15,7 @@
               </div>  
             
           </tab-content>
-          <tab-content title="Order Details" :before-change="beforeTabSwitch">
+          <tab-content  :before-change="beforeTabSwitch" icon="ti-shopping-cart">
             <div class="form-group">
       
               <select v-model="category_id"  class="form-control" @change="updateFoods($event)">
@@ -33,7 +33,7 @@
             <div v-show="showPrices">Total Price {{total | currency}} </div>
             <div v-show="showPrices && dinein == 'delivery'">Delivery Fee {{delivery_fee | currency }}</div>
           </tab-content>
-          <tab-content title="Delivery Details" v-if="dinein == 'delivery'" :before-change="beforeDeliverySwitch">        
+          <tab-content  v-if="dinein == 'delivery'" icon="ti-truck" :before-change="beforeDeliverySwitch">        
               <div class="form-row">
                   <div class="col">
                        <div class="form-group">
@@ -51,12 +51,12 @@
                
               <div class="form-group">
                 <label for="note">Note</label>
-                <textarea v-model="note" cols="5" rows="5" class="form-control" placeholder="Enter extra note for orders"></textarea>
+                <textarea v-model="note" cols="5" rows="5" class="form-control"  placeholder="Enter extra note for orders"></textarea>
               </div>
               <div v-show="showPrices">Total Price {{total | currency}} </div>
               <div v-show="showPrices && dinein == 'delivery'">Delivery Fee {{delivery_fee | currency }}</div>
           </tab-content>
-           <tab-content title="Dine In Details" v-if="dinein == 'dine-in'">
+           <tab-content icon="ti-user" v-if="dinein == 'dine-in'">
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="first-name">First Name</label>
@@ -91,7 +91,7 @@
               <div v-show="showPrices">Total Price {{total | currency}} </div>
               <div v-show="showPrices && dinein == 'delivery'">Delivery Fee {{delivery_fee | currency }}</div>
           </tab-content>
-          <tab-content title="Pick Up Details" v-if="dinein == 'takeout'">
+          <tab-content icon="ti-user" v-if="dinein == 'takeout'">
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="first-name">First Name</label>
@@ -134,7 +134,7 @@
               <div v-show="showPrices">Total Price {{total | currency}} </div>
               <div v-show="showPrices && dinein == 'delivery'">Delivery Fee {{delivery_fee | currency }}</div>
           </tab-content>
-          <tab-content title="Personal Details" v-if="dinein == 'delivery'">
+          <tab-content  icon="ti-user" v-if="dinein == 'delivery'">
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="first-name">First Name</label>
@@ -216,6 +216,7 @@ import {FormWizard, TabContent} from 'vue-form-wizard'
 import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+import '../assets/themify-icons.css'
 import FoodCard  from './FoodCard.vue';
 import moment from 'moment'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
