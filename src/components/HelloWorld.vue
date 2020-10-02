@@ -237,7 +237,7 @@ export default {
   props : ["button"],
   data () {
     return {
-      api : "https://dev.dinerr.app/api/",
+      api : "https://partner.dinerr.app/api/",
       restaurant_name : "",
       restaurant : {},
       errorMsg : null,
@@ -715,7 +715,7 @@ export default {
             pickup_longitude: this.restaurant.longitude,
             delivery_latitude: addressData.latitude,
             delivery_longitude: addressData.longitude,
-            api_key : "RaS5PPEh2R6hKIkaV6lALtBa5721Bxk7Nov1WjQz3pgo8Xk9QrKalmOiJJyr_test"
+            api_key : "qyIQGxDukbZ78EfHQK7Bc6dd9CJ8SDWbZRslXldKJkAOrythqMzFjW4i"
           }).then(e => {
               if(this.delivery_fee == 0){
                 this.delivery_fee = e.data.fare
