@@ -856,7 +856,7 @@ export default {
           
             let a = this;
             let handler = PaystackPop.setup({
-            key: 'pk_test_636c9a1c3f12f53b7812c201cc3abd07432eda85', // Replace with your public key
+            key: 'pk_live_86416fab56ffa33012fdc7983191284c00b69fab', // Replace with your public key
             email: this.email,
             amount: (this.total + this.delivery_fee) * 100,
             subaccount : this.restaurant.subaccount_code,
