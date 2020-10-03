@@ -715,7 +715,7 @@ export default {
             pickup_longitude: this.restaurant.longitude,
             delivery_latitude: addressData.latitude,
             delivery_longitude: addressData.longitude,
-            api_key : "qyIQGxDukbZ78EfHQK7Bc6dd9CJ8SDWbZRslXldKJkAOrythqMzFjW4i"
+            api_key : "qyIQGxDukbZ78EfHQK7Bc6dd9CJ8SDWbZRslXldKJkAOrythqMzFjW4iXz6P"
           }).then(e => {
               if(this.delivery_fee == 0){
                 this.delivery_fee = e.data.fare
