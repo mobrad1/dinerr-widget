@@ -16,29 +16,20 @@ import '@fortawesome/fontawesome-free/css/all.css'
 import '@fortawesome/fontawesome-free/js/all.js'
 import * as VueGoogleMaps from 'vue2-google-maps'
 
+var filter = function(text, length, clamp){
+  clamp = clamp || '...';
+  var node = document.createElement('div');
+  node.innerHTML = text;
+  var content = node.textContent;
+  return content.length > length ? content.slice(0, length) + clamp : content;
+};
+Vue.filter('truncate', filter);
 Vue.use(VueGoogleMaps, {
   load: {
     key: 'AIzaSyCMFHjCT-poNivAWBgHR2Jthjph6X7ab0o',
-    libraries: 'places', // This is required if you use the Autocomplete plugin
-    // OR: libraries: 'places,drawing'
-    // OR: libraries: 'places,drawing,visualization'
-    // (as you require)
-
-    //// If you want to set the version, you can do so:
-    // v: '3.26',
+    libraries: 'places', 
   },
 
-  //// If you intend to programmatically custom event listener code
-  //// (e.g. `this.$refs.gmap.$on('zoom_changed', someFunc)`)
-  //// instead of going through Vue templates (e.g. `<GmapMap @zoom_changed="someFunc">`)
-  //// you might need to turn this on.
-  // autobindAllEvents: false,
-
-  //// If you want to manually install components, e.g.
-  //// import {GmapMarker} from 'vue2-google-maps/src/components/marker'
-  //// Vue.component('GmapMarker', GmapMarker)
-  //// then set installComponents to 'false'.
-  //// If you want to automatically install all the components this property must be set to 'true':
   installComponents: true
 })
 Vue.use(loading,{
