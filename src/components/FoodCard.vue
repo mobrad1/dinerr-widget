@@ -1,6 +1,6 @@
 <template>
   <div class="food-card d-flex flex-column m-2">
-        <div class="food-img" :style="imageBackground(img)">
+        <div class="food-img" :style="imageBackground(food.media[0].thumb)">
             <div class="p_input">   
                 <input type="checkbox" class="p_checkbox"  @change="addItem(food)">
             </div>
