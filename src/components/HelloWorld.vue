@@ -7,9 +7,9 @@
                   <div class="col-md-12">
                         <label v-if="restaurant.delivery == 1">Delivery</label> 
                         <input v-if="restaurant.delivery == 1" type="radio" class="mr-2" style="co" name="dine-in" v-model="dinein" value="delivery">
-                        <label v-if="restaurant.dine_in == 1">Dine in</label> 
-                        <input v-if="restaurant.dine_in == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="dine-in">
-                        <label v-if="restaurant.takeout == 1">Takeout</label> 
+                        <!-- <label v-if="restaurant.dine_in == 1">Dine in</label> 
+                        <input v-if="restaurant.dine_in == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="dine-in"> -->
+                        <label v-if="restaurant.takeout == 1">Pickup</label> 
                         <input v-if="restaurant.takeout == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="takeout">
                   </div>
               </div>  
@@ -702,7 +702,6 @@ export default {
             }
         }
          return this.allDisabled = this.allDisabled.flat()
-       
       },
   },
    methods: {
@@ -734,7 +733,7 @@ export default {
         },
         getDate(event){
             let dayInt = moment(event,"YYYY-MM-DD").weekday()
-            this.getOpeningHours(this.openings[this.dayName(dayInt)])
+            this.getOpeningHours(this.openings[this.dayName(dayInt)],event)
             console.log(this.dayName(dayInt))
         },
         beforeTabSwitch: function(){
@@ -769,7 +768,10 @@ export default {
            this.disabled = true
           })
         },
-        getOpeningHours(hours){
+        getOpeningHours(hours,day){
+          console.log(moment(day).add(24,'hours'))
+            
+           
             let newHours = hours.split("-")
             let newRoundUps = []
             for(var i = 0; i < newHours.length ; i ++){
@@ -778,7 +780,9 @@ export default {
               // var roundUp = m.minute() || m.second() || m.millisecond() ? m.add(1, 'hour').startOf('hour') : m.startOf('hour');
               newRoundUps.push(roundDown.format("H:mm").replace(":00",""))
             }
-            let lowEnd = parseInt(newRoundUps[0]) + parseInt(this.lead_time)
+            
+            let lowEnd = !moment(day).isSame(this.getMinDate,'day') ? parseInt(newRoundUps[0]) + parseInt(this.lead_time) : parseInt(newRoundUps[0])
+            
             let highEnd = parseInt(newRoundUps[1])
             let closings = [];
             
