@@ -182,9 +182,8 @@
                     classname="form-control"
                     placeholder="Please type your address"
                     v-on:placechanged="getCordinates"
+                   
                     country="ng"
-                    
-                    
                 >
                 </vue-google-autocomplete>
                 <!-- <input type="text" class="form-control" v-model="address" id="inputAddress" placeholder="1234 Main St"> -->
@@ -689,7 +688,7 @@ export default {
       total: 'cartTotalPrice'
     }),
     getMinDate(){
-      var dt = moment().add(this.lead_time,"hours").format()
+      var dt = moment().format()
       return dt;
     },
     getOpenings(){
@@ -706,7 +705,9 @@ export default {
   },
    methods: {
         getCordinates(addressData, placeResultData, id){
+          let oldFare 
           this.address = addressData.route
+          console.log(placeResultData)
     
           this.$isLoading(true)
           this.axios.post("https://api.gokada.ng/api/developer/order_estimate",{   
@@ -716,10 +717,14 @@ export default {
             delivery_longitude: addressData.longitude,
             api_key : "qyIQGxDukbZ78EfHQK7Bc6dd9CJ8SDWbZRslXldKJkAOrythqMzFjW4iXz6P"
           }).then(e => {
+               oldFare = e.data.fare
               if(this.delivery_fee == 0){
                 this.delivery_fee = e.data.fare
               }
-              
+              console.log(oldFare)
+              if(oldFare != 0){
+                  this.delivery_fee = e.data.fare
+              }
               this.$isLoading(false)
           }).catch(e => {
             this.$isLoading(false)
@@ -781,7 +786,8 @@ export default {
               newRoundUps.push(roundDown.format("H:mm").replace(":00",""))
             }
             
-            let lowEnd = !moment(day).isSame(this.getMinDate,'day') ? parseInt(newRoundUps[0]) + parseInt(this.lead_time) : parseInt(newRoundUps[0])
+            let lowEnd = moment(day).add(this.lead_time,"hours").isSame(this.getMinDate,'day') ? parseInt(newRoundUps[0]) + parseInt(this.lead_time) : parseInt(newRoundUps[0])
+            
             
             let highEnd = parseInt(newRoundUps[1])
             let closings = [];
