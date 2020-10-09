@@ -7,7 +7,7 @@
                   <div class="col-md-12">
                         <label v-if="restaurant.delivery == 1">Delivery</label> 
                         <input v-if="restaurant.delivery == 1" type="radio" class="mr-2" style="co" name="dine-in" v-model="dinein" value="delivery">
-                        <!-- <label v-if="restaurant.dine_in == 1">Dine in</label> 
+                        <!-- <label v-if="restaurant.dine_in == 1">Pick Up</label> 
                         <input v-if="restaurant.dine_in == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="dine-in"> -->
                         <label v-if="restaurant.takeout == 1">Pickup</label> 
                         <input v-if="restaurant.takeout == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="takeout">
