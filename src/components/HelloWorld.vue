@@ -706,7 +706,7 @@ export default {
    methods: {
         getCordinates(addressData, placeResultData, id){
           let oldFare 
-          this.address = addressData.route
+          this.address = placeResultData.formatted_address
           console.log(placeResultData)
     
           this.$isLoading(true)
@@ -774,8 +774,8 @@ export default {
           })
         },
         getOpeningHours(hours,day){
-          console.log(moment(day).add(24,'hours'))
-            
+         
+     
            
             let newHours = hours.split("-")
             let newRoundUps = []
