@@ -773,7 +773,7 @@ export default {
         },
         selectArea(event){
          this.areaDisabled = false
-         this.axios.get('http://locationsng-api.herokuapp.com/api/v1/states/' + event.target.value + '/lgas').then(e =>{
+         this.axios.get('https://locationsng-api.herokuapp.com/api/v1/states/' + event.target.value + '/lgas').then(e =>{
             this.selectAreas = e.data
          })
         
