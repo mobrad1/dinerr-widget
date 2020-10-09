@@ -236,7 +236,7 @@ export default {
   props : ["button"],
   data () {
     return {
-      api : "https://partner.dinerr.app/api/",
+      api : "https://dev.dinerr.app/api/",
       restaurant_name : "",
       restaurant : {},
       errorMsg : null,
