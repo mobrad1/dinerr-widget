@@ -4,7 +4,7 @@
           <tab-content icon="ti-notepad">
           
               <div class="row">
-                  <div class="col-md-12">Moj
+                  <div class="col-md-12">
                         <label v-if="restaurant.delivery == 1">Delivery</label> 
                         <input v-if="restaurant.delivery == 1" type="radio" class="mr-2" style="co" name="dine-in" v-model="dinein" value="delivery">
                         <!-- <label v-if="restaurant.dine_in == 1">Pick Up</label> 
@@ -881,7 +881,7 @@ export default {
           
             let a = this;
             let handler = PaystackPop.setup({
-            key: 'pk_test_636c9a1c3f12f53b7812c201cc3abd07432eda85', // Replace with your public key
+            key: 'pk_live_86416fab56ffa33012fdc7983191284c00b69fab', // Replace with your public key
             email: this.email,
             amount: (this.total + this.delivery_fee) * 100,
             subaccount : this.restaurant.subaccount_code,
