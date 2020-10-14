@@ -4,7 +4,7 @@
           <tab-content icon="ti-notepad">
           
               <div class="row">
-                  <div class="col-md-12">
+                  <div class="col-md-12">Moj
                         <label v-if="restaurant.delivery == 1">Delivery</label> 
                         <input v-if="restaurant.delivery == 1" type="radio" class="mr-2" style="co" name="dine-in" v-model="dinein" value="delivery">
                         <!-- <label v-if="restaurant.dine_in == 1">Pick Up</label> 
@@ -271,7 +271,7 @@ export default {
   props : ["button"],
   data () {
     return {
-      api : "http://localhost:8000/api/",
+      api : "https://partner.dinerr.app/api/",
       restaurant_name : "",
       restaurant : {},
       errorMsg : null,

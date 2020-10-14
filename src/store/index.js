@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-const api = "http://localhost:8000/api/"
+const api = "https://partner.dinerr.app/api/"
 Vue.use(Vuex);
 Vue.use(VueAxios, axios)
 
