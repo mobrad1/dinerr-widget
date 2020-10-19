@@ -176,6 +176,7 @@
                     <option value="edo">Edo</option>
                     <option value="ekiti">Ekiti</option>
                     <option value="enugu">Enugu</option>
+                    <option value="abuja">Federal Capital Territory</option>
                     <option value="gombe">Gombe</option>
                     <option value="imo">Imo</option>
                     <option value="jigawa">Jigawa</option>
