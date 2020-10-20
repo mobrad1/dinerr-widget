@@ -173,7 +173,6 @@
                     <option value="cross_river">Cross River</option>
                     <option value="delta">Delta</option>
                     <option value="ebonyi">Ebonyi</option>
-                    <option value="abuja">Federal Capital Territory</option>
                     <option value="edo">Edo</option>
                     <option value="ekiti">Ekiti</option>
                     <option value="enugu">Enugu</option>
