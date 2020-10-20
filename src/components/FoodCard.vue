@@ -17,10 +17,10 @@
                 <input class="form-control" id="quantity" type="number" @change="updateItem(food)" v-model="quantity">
             </div>
         </div>
-        <modal :name="'menu-item-' + food.id" height="auto">
-            <div style="padding:10px;" class="food-preview">
+        <modal :name="'menu-item-' + food.id" height="auto" :adaptive="true">
+            <div class="food-preview">
                 <img :src="img" :alt="food.name" class="responsive">
-                <h5 class="mt-2">{{food.name}}</h5>
+                <h5 class="mt-2 text-center">{{food.name}}</h5>
             </div>
         </modal>
   </div>
@@ -39,6 +39,7 @@ export default {
     
     methods : {
         imageBackground(img){
+        
             return {
                 "background-image" : `url(${img})`
             }
@@ -87,9 +88,9 @@ export default {
         border-bottom: 1px solid #F4F4F4;
     }
     .responsive {
-        width: 100%;
-        max-width: 400px;
-        height: auto;
+        object-fit: cover;
+        width: 320px;
+        max-height: 480px;
      }
     .form-control{
         width: 50%;
