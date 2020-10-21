@@ -145,7 +145,7 @@ export default {
 
 /* When the checkbox is checked, add a blue background */
 .p_input > label input:checked ~ .checkmark {
-  background-color: #2196F3;
+  background-color: #ff5800;
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
