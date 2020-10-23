@@ -137,6 +137,7 @@ export default {
         width: 20px; 
         height: 20px; 
         border: 1px solid red;
+        border-radius: 3px;
         position: absolute;
         opacity: 0;
         cursor: pointer;
