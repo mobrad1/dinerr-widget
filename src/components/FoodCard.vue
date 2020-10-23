@@ -10,19 +10,32 @@
             </div>
         </div>
 
-        <div class="food-details d-flex flex-grow-1 p-3 flex-column justify-content-between" @click="openMenu">
-            <div class="price-name flex-column">
+        <div class="food-details d-flex flex-grow-1 p-3 flex-column justify-content-between">
+            <div class="price-name flex-column" @click="openMenu">
                 <span class="h6">{{food.name | truncate(35,"...")}}</span>
                 <b><p class="text-primary mb-0">{{food.price | currency}}</p></b>
             </div>
 
             <div class="food-price d-flex align-items-center">
                 <label for="quantity" class="text-muted mr-2">Quantity</label>
-                <input class="form-control" id="quantity" type="number" @change="updateItem(food)" v-model="quantity">
+                <select  id="quantity" class="form-control" @change="updateItem(food)" v-model="quantity">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                    <option>8</option>
+                    <option>9</option>
+                    <option>10</option>
+                </select>
+                
             </div>
         </div>
         <modal :name="'menu-item-' + food.id" height="auto" :adaptive="true">
             <div class="food-preview">
+                <span class="close" @click="closeModal">X</span>
                 <img :src="img" :alt="food.name" class="responsive">
                 <h5 class="mt-2 text-center">{{food.name}}</h5>
             </div>
@@ -50,6 +63,9 @@ export default {
         },
         openMenu(){
             this.$modal.show('menu-item' + '-' + this.food.id);
+        },
+        closeModal(){
+            this.$modal.hide('menu-item' + '-' + this.food.id)
         },
         addItem(food){
           food.quantity = this.quantity  
@@ -94,7 +110,7 @@ export default {
     .responsive {
         object-fit: cover;
         width: 320px;
-        max-height: 480px;
+        max-height: 350px;
      }
      .p_input > label {
          display: block;
@@ -109,9 +125,7 @@ export default {
      }
     .form-control{
         width: 50%;
-        height: 20px;
         margin: 3px;
-        padding: 12px;
         border: 1px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
@@ -128,6 +142,14 @@ export default {
         cursor: pointer;
         height: 0;
         width: 0;
+    }
+    .close{
+        position: absolute;
+        right: 4px;
+        top: 0px;
+        margin: 10px;
+        cursor : pointer;
+        color:red;
     }
     .checkmark {
         position: absolute;
