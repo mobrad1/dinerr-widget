@@ -218,7 +218,7 @@
                     classname="form-control"
                     placeholder="Please type your address"
                     v-on:placechanged="getCordinates"
-                    types="(geocode,address)"
+                    types=""
                     country="ng"
                 >
                 </vue-google-autocomplete>
