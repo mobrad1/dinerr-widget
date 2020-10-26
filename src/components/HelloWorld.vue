@@ -906,7 +906,7 @@ export default {
                     foods : a.items,
                     email : a.email,
                     name : a.firstName + " " + a.lastName,
-                    address : a.address + " ," + a.city + "," + a.state,
+                    address : a.address,
                     reference : response.reference,
                     phone : a.telephone,
                     note : a.note,
