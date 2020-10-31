@@ -1,7 +1,7 @@
 <template>
   <div class="dinerr-widget">
         <form-wizard  :title="restaurant_name" subtitle="" color="#ff5800" v-if="!isComplete && restaurant.status == 1" step-size="xs" @on-change="getIndex" @on-complete="onComplete" @on-validate="handleValidation" finish-button-text="Pay & Finish" shape="circle" >
-          <tab-content icon="ti-notepad">
+          <tab-content icon="ti-notepad" :before-change="beforeDeliverySwitch">
           
               <div class="row">
                   <div class="col-md-12">
@@ -11,6 +11,24 @@
                         <input v-if="restaurant.dine_in == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="dine-in"> -->
                         <label v-if="restaurant.takeout == 1">Pickup</label> 
                         <input v-if="restaurant.takeout == 1" type="radio" class="mr-2" name="dine-in" v-model="dinein" value="takeout">
+                  </div>
+                  <div class="col-md-12">
+                       <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="delivery-time" v-if="dinein == 'delivery'">Delivery Date</label>
+                                <label for="delivery-time" v-if="dinein == 'takeout'">Pickup Date</label>
+                                <VueCtkDateTimePicker :only-date="true" @input="getDate($event)" format="YYYY-MM-DD" formatted="ll" label="Select Date" :no-button-now="true" button-color="#ff5800" color="#ff5800" :min-date="getMinDate"  :disabled-dates="getOpenings"  v-model="date" /> 
+                            </div> 
+                        </div>
+                        <div class="col" v-if="dateIsset">
+                            <div class="form-group">
+                                <label for="delivery-time" v-if="dinein == 'delivery'">Delivery Time</label>
+                                <label for="delivery-time" v-if="dinein == 'takeout'">Pickup Time</label>
+                                <VueCtkDateTimePicker id="TimePicker" :disabled-hours="disabledTimes"  :only-time="true" format="HH:mm" formatted="HH:mm" label="Select Time" :no-button-now="true" button-color="#ff5800" color="#ff5800" :max-date="getMinDate"  minute-interval="30" v-model="time" /> 
+                            </div> 
+                        </div>
+                      </div>
                   </div>
               </div>  
             
@@ -25,7 +43,7 @@
               </select>
             </div>
             <div class="food-holder">
-              <food-card v-for="food in foods" :key="food.id" :food="food" :img=getImage(food.media) >
+              <food-card v-for="food in foods.filter(i => i.days[selectedDay])" :key="food.id" :food="food"  :img=getImage(food.media) >
 
               </food-card>
               
@@ -33,29 +51,7 @@
             <div v-show="showPrices">Total Price {{total | currency}} </div>
             <div v-show="showPrices && dinein == 'delivery'">Delivery Fee {{delivery_fee | currency }}</div>
           </tab-content>
-          <tab-content  v-if="dinein == 'delivery'" icon="ti-truck" :before-change="beforeDeliverySwitch">        
-              <div class="form-row">
-                  <div class="col">
-                       <div class="form-group">
-                           <label for="delivery-time">Delivery Date</label>
-                           <VueCtkDateTimePicker :only-date="true" @input="getDate($event)" format="YYYY-MM-DD" formatted="ll" label="Select Date" :no-button-now="true" button-color="#ff5800" color="#ff5800" :min-date="getMinDate"  :disabled-dates="getOpenings"  v-model="date" /> 
-                       </div> 
-                  </div>
-                  <div class="col">
-                       <div class="form-group">
-                           <label for="delivery-time">Delivery Time</label>
-                           <VueCtkDateTimePicker id="TimePicker" :disabled-hours="disabledTimes"  :only-time="true" format="HH:mm" formatted="HH:mm" label="Select Time" :no-button-now="true" button-color="#ff5800" color="#ff5800" :max-date="getMinDate"  minute-interval="30" v-model="time" /> 
-                       </div> 
-                  </div>
-              </div>
-               
-              <div class="form-group">
-                <label for="note">Note</label>
-                <textarea v-model="note" cols="5" rows="5" class="form-control"  placeholder="Enter extra note for orders"></textarea>
-              </div>
-              <div v-show="showPrices">Total Price {{total | currency}} </div>
-              <div v-show="showPrices && dinein == 'delivery'">Delivery Fee {{delivery_fee | currency }}</div>
-          </tab-content>
+         
            <tab-content icon="ti-user" v-if="dinein == 'dine-in'">
               <div class="form-row">
                 <div class="form-group col-md-6">
@@ -152,12 +148,14 @@
                 </div>
                 <div class="form-group col-md-6">
                   <label for="telephone">Telephone</label>
-                  
                   <input type="text" class="form-control" id="telephone" v-model="telephone" placeholder="Please Enter Telephone">
                 </div>
+                <div class="form-group col-md-12">
+                  <label for="note">Note</label>
+                  <textarea v-model="note" cols="20" rows="2" class="form-control" placeholder="Enter extra note for orders"></textarea>
+                </div>
               </div>
-              <div class="form-row">
-                
+              <div class="form-row">    
                 <div class="form-group col-md-6">
                   <label for="inputState">State</label>
                   <select id="inputState" class="form-control" v-model="state" @change="selectArea($event)">
@@ -275,12 +273,14 @@ export default {
       api : "https://partner.dinerr.app/api/",
       restaurant_name : "",
       restaurant : {},
+      dateIsset : false,
       errorMsg : null,
       email : "",
       firstName : "",
       lastName : "",
       city : "",
       state : "",
+      selectedDay : "monday",
       address : "",
       telephone : "",
       selectedItems : [],
@@ -752,7 +752,7 @@ export default {
         getDate(event){
             let dayInt = moment(event,"YYYY-MM-DD").weekday()
             this.getOpeningHours(this.openings[this.dayName(dayInt)],event)
-            console.log(this.dayName(dayInt))
+            this.selectedDay = this.dayName(dayInt)
         },
         beforeTabSwitch: function(){
           if(this.total > 0){
@@ -792,7 +792,7 @@ export default {
         getOpeningHours(hours,day){
          
      
-           
+            this.dateIsset = true
             let newHours = hours.split("-")
             let newRoundUps = []
             for(var i = 0; i < newHours.length ; i ++){
@@ -822,8 +822,8 @@ export default {
             
         },
         beforeDeliverySwitch(){
-          if(this.date == "" && this.time == ""){
-            this.errorMsg = "Please select delivery time"
+          if(this.date == "" || this.time == ""){
+            this.errorMsg = "Please select delivery time and date"
             return false
           }
         

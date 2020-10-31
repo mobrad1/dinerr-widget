@@ -15,17 +15,17 @@ export default new Vuex.Store({
     getters: {
         foods: (state) => state.foods,
         cartFoods: (state, getters, rootState) => {
-            return state.items.map(({ id, quantity }) => {
+            return state.items.map(({ id, amount }) => {
               const food = rootState.foods.find(food => food.id === id)
               return {
                 price: food.price,
-                quantity
+                amount
               }
             })
           },
         cartTotalPrice: (state, getters) => {
             return getters.cartFoods.reduce((total, food) => {
-              return total + food.price * food.quantity
+              return total + food.price * food.amount
             }, 0)
         }
     
@@ -34,10 +34,10 @@ export default new Vuex.Store({
         setFoods(state,foods){
             state.foods = foods
         },
-        pushFoodToCart (state, { id , quantity , price }) {
+        pushFoodToCart (state, { id , amount , price }) {
             state.items.push({
                 id,
-                quantity,
+                amount,
                 price
             })
         },
@@ -104,7 +104,7 @@ export default new Vuex.Store({
             const cartItem = state.items.find(item => item.id === food.id)
             if(!cartItem){
                 //Add else remove
-               commit('pushFoodToCart', { id: food.id ,quantity : food.quantity,price : food.price})
+               commit('pushFoodToCart', { id: food.id ,amount : food.amount,price : food.price})
             }else{
                commit('popFoodFromCart',{id: food.id})
             }
@@ -115,7 +115,7 @@ export default new Vuex.Store({
               {
                   if(cartItem){
                     commit('popFoodFromCart',{id: food.id})
-                    commit('pushFoodToCart', { id: food.id ,quantity : food.quantity,price : food.price})
+                    commit('pushFoodToCart', { id: food.id ,amount : food.amount,price : food.price})
                   }
               }
           }

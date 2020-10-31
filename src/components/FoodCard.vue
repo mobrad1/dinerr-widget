@@ -3,8 +3,8 @@
         <div class="food-img" :style="imageBackground(food.media[0].thumb)">
             <div class="p_input">
                 <label>
-                    <input type="checkbox" class="p_checkbox"  @change="addItem(food)"> 
-                    <span class="checkmark"></span>
+                    <input type="checkbox" class="p_checkbox" v-if="food.quantity != 0"  @change="addItem(food)"> 
+                    <span class="checkmark" v-if="food.quantity != 0"></span>
                 </label>   
                 
             </div>
@@ -15,23 +15,22 @@
                 <span class="h6">{{food.name | truncate(35,"...")}}</span>
                 <b><p class="text-primary mb-0">{{food.price | currency}}</p></b>
             </div>
-
+        
             <div class="food-price d-flex align-items-center">
                 <label for="quantity" class="text-muted mr-2">Quantity</label>
-                <select  id="quantity" class="form-control" @change="updateItem(food)" v-model="quantity">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                    <option>6</option>
-                    <option>7</option>
-                    <option>8</option>
-                    <option>9</option>
-                    <option>10</option>
+                <select  id="quantity" class="form-control" @change="updateItem(food)" v-model="amount" v-if="food.quantity < 10">
+                    <option v-for="n in food.quantity" :key="n">{{n}}</option>
+                </select>
+                <select  id="quantity" class="form-control" @change="updateItem(food)" v-model="amount" v-else>
+                    <option v-for="n in 10" :key="n">{{n}}</option>
                 </select>
                 
             </div>
+        
+        </div>
+        <div class="mx-2">
+            <p v-if="food.quantity == 0" class="text-red"><strong>SOLD OUT</strong></p>
+            <p v-if="food.quantity <= 5 & food.quantity !=0" class="text-red"><strong>{{food.quantity}} LEFT</strong></p>
         </div>
         <modal :name="'menu-item-' + food.id" height="auto" :adaptive="true">
             <div class="food-preview">
@@ -50,10 +49,9 @@ export default {
     data(){
         return {
             isChecked : false,
-            quantity : 1
+            amount : 1,
         }
     },
-    
     methods : {
         imageBackground(img){
         
@@ -68,13 +66,13 @@ export default {
             this.$modal.hide('menu-item' + '-' + this.food.id)
         },
         addItem(food){
-          food.quantity = this.quantity  
+          food.amount = this.amount
           this.$store.dispatch('addFoodToCart',food)
         },
         updateItem(food){
-          food.quantity = this.quantity
+          food.amount = this.amount
           this.$store.dispatch('updateFoodToCart',food)  
-        }
+        },
     }
 }
 </script>
@@ -84,7 +82,7 @@ export default {
         width: 150px;
         margin : 5px;
         border: 1px solid whitesmoke;
-        height: 285px;
+        height: 300px;
     }
     .food-preview{
         padding: 10px;
@@ -95,6 +93,9 @@ export default {
     .food-details {
         border-top: 1px solid whitesmoke;
         cursor: pointer;
+    }
+    .text-red{
+        color:red;
     }
     .food-img{
         background-position: center;
