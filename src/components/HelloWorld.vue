@@ -43,7 +43,7 @@
               </select>
             </div>
             <div class="food-holder">
-              <food-card v-for="food in foods.filter(i => i.days[selectedDay])" :key="food.id" :food="food"  :img=getImage(food.media) >
+              <food-card v-for="food in foods.filter(i => i.days[selectedDay]).filter(i => i.status)" :key="food.id" :food="food"  :img=getImage(food.media) >
 
               </food-card>
               
