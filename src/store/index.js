@@ -74,7 +74,7 @@ export default new Vuex.Store({
               })
         },
         updateAllFoods({commit},data){
-            if(data == "all"){
+            if(data == "all" || data == "0"){
                 axios.get(api + "foods",{
                     params : {
                       with : "restaurant",
