@@ -1,6 +1,6 @@
 <template>
   <div class="dinerr-widget">
-        <form-wizard  :title="restaurant_name" subtitle="" color="#ff5800" v-if="!isComplete && restaurant.status == 1" step-size="xs" @on-change="getIndex" @on-complete="onComplete" @on-validate="handleValidation" finish-button-text="Pay & Finish" shape="circle" >
+        <form-wizard  :title="restaurant_name" subtitle="" slot="step" color="#ff5800" v-if="!isComplete && restaurant.status == 1" step-size="xs" @on-change="getIndex" @on-complete="onComplete" @on-validate="handleValidation" ref="" finish-button-text="Pay & Finish" shape="circle" >
           <tab-content icon="ti-notepad" :before-change="beforeDeliverySwitch">
           
               <div class="row">
@@ -229,7 +229,17 @@
            <div v-if="errorMsg">
             <span class="error">{{errorMsg}}</span>
           </div>
-          
+          <template v-if="restaurant.dummy == true" slot="footer" slot-scope="props">
+            <div class=wizard-footer-left>
+              <wizard-button  v-if="props.activeTabIndex > 0 || !props.isLastStep" :style="props.fillButtonStyle" @click.native="props.prevTab()">Back</wizard-button>
+            </div>
+           <div class="wizard-footer-right">
+              <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab()" class="wizard-footer-right" :style="props.fillButtonStyle">Next</wizard-button>
+              
+              <wizard-button v-else @click.native="alert('Done')" class="wizard-footer-right finish-button" :style="props.fillButtonStyle">{{props.isLastStep ? 'Pay and Finish' : 'Next'}}</wizard-button>
+            </div>
+        
+          </template>
        </form-wizard>
        <div class="success-alert" v-if="isComplete && restaurant.status == 1">
           <h3 class="m-2 text-center">{{restaurant_name}}</h3>
@@ -245,7 +255,7 @@
 </template>
 <script src=""></script> 
 <script>
-import {FormWizard, TabContent} from 'vue-form-wizard'
+import {FormWizard, TabContent, WizardButton} from 'vue-form-wizard'
 import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
@@ -263,6 +273,7 @@ export default {
   components: {
     FormWizard,
     TabContent,
+    WizardButton,
     FoodCard,
     VueGoogleAutocomplete,
     VueCtkDateTimePicker: VueCtkDateTimePicker
@@ -717,6 +728,13 @@ export default {
       },
   },
    methods: {
+        isLastStep() {
+          if (this.$refs.wizard) {
+
+            return this.$refs.wizard.isLastStep
+          }
+          return false
+        },
         getCordinates(addressData, placeResultData, id){
           let oldFare 
           this.address = placeResultData.formatted_address
