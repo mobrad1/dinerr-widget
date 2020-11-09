@@ -738,28 +738,31 @@ export default {
         getCordinates(addressData, placeResultData, id){
           let oldFare 
           this.address = placeResultData.formatted_address
-          console.log(placeResultData)
-    
-          this.$isLoading(true)
-          this.axios.post("https://api.gokada.ng/api/developer/order_estimate",{   
-            pickup_latitude : this.restaurant.latitude,
-            pickup_longitude: this.restaurant.longitude,
-            delivery_latitude: addressData.latitude,
-            delivery_longitude: addressData.longitude,
-            api_key : "qyIQGxDukbZ78EfHQK7Bc6dd9CJ8SDWbZRslXldKJkAOrythqMzFjW4iXz6P"
-          }).then(e => {
-               oldFare = e.data.fare
-              if(this.delivery_fee == 0){
-                this.delivery_fee = e.data.fare
-              }
-              console.log(oldFare)
-              if(oldFare != 0){
+       
+          
+          if(this.restaurant.shipping_rate == true){
+              this.$isLoading(true)
+              this.axios.post("https://api.gokada.ng/api/developer/order_estimate",{   
+              pickup_latitude : this.restaurant.latitude,
+              pickup_longitude: this.restaurant.longitude,
+              delivery_latitude: addressData.latitude,
+              delivery_longitude: addressData.longitude,
+              api_key : "qyIQGxDukbZ78EfHQK7Bc6dd9CJ8SDWbZRslXldKJkAOrythqMzFjW4iXz6P"
+            }).then(e => {
+                oldFare = e.data.fare
+                if(this.delivery_fee == 0){
                   this.delivery_fee = e.data.fare
-              }
+                }
+            
+                if(oldFare != 0){
+                    this.delivery_fee = e.data.fare
+                }
+                this.$isLoading(false)
+            }).catch(e => {
               this.$isLoading(false)
-          }).catch(e => {
-            this.$isLoading(false)
-          })
+            })
+          }
+          
         },
         show () {
             this.$modal.show('order-modal');
@@ -798,14 +801,16 @@ export default {
         
         },
         calculatePrice(event){
+        
             this.$isLoading(true)
-          this.axios.post(this.api + `calculate/price/${window.id}`,{
-            lga_name : event.target.value
-          }).then(e => {
-           this.delivery_fee = e.data
-             this.$isLoading(false)
-           this.disabled = true
-          })
+            this.axios.post(this.api + `calculate/price/${window.id}`,{
+              lga_name : event.target.value
+            }).then(e => {
+            this.delivery_fee = e.data
+              this.$isLoading(false)
+            this.disabled = true
+            })
+          
         },
         getOpeningHours(hours,day){
          
