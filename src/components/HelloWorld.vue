@@ -758,6 +758,7 @@ export default {
                     this.delivery_fee = e.data.fare
                 }
                 this.$isLoading(false)
+                this.errorMsg = ""
             }).catch(e => {
               this.$isLoading(false)
             })
@@ -806,6 +807,9 @@ export default {
             this.axios.post(this.api + `calculate/price/${window.id}`,{
               lga_name : event.target.value
             }).then(e => {
+              if(e.data == 0){
+                this.errorMsg = "Restaurant does not deliver to this area"
+              }
             this.delivery_fee = e.data
               this.$isLoading(false)
             this.disabled = true
