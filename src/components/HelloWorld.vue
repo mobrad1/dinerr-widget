@@ -795,6 +795,12 @@ export default {
           
         },
         selectArea(event){
+          if(event.target.value != this.restaurant.state){
+            this.errorMsg = "Restaurant does not deliver to this state"
+          }
+          if(event.target.value == this.restaurant.state.toLowerCase()){
+            this.errorMsg = ""
+          }
          this.areaDisabled = false
          this.axios.get('https://partner.dinerr.app/api/v1/states/' + event.target.value + '/lgas').then(e =>{
             this.selectAreas = e.data
