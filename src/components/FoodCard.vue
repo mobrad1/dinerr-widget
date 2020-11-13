@@ -13,10 +13,16 @@
         <div class="food-details d-flex flex-grow-1 p-3 flex-column justify-content-between">
             <div class="price-name flex-column" @click="openMenu">
                 <span class="h6">{{food.name | truncate(35,"...")}}</span>
-                <b><p class="text-primary mb-0">{{food.price | currency}}</p></b>
+                <b style="display:flex;justify-content:space-between;"><p class="text-primary mb-0">{{ food.price | currency}}</p> <p v-if="food.quantity <= 5 & food.quantity !=0" style="color:red !important;" class="text-red text-muted m-2">{{food.quantity}} L</p></b>
             </div>
-        
-            <div class="food-price d-flex align-items-center">
+            <div style="display:flex;" v-if="food.variants.length > 0">
+                <label class="text-muted mr-3">Variant</label>
+                <select name="" id="" class="form-control" @change="updatePrice">
+                    <option v-for="(n,index) in food.variants" :key="index" :value="n.id">{{n.name}}</option>
+                </select>
+            </div>
+           
+            <div class="food-price d-flex align-items-center"> 
                 <label for="quantity" class="text-muted mr-2">Quantity</label>
                 <select  id="quantity" class="form-control" @change="updateItem(food)" v-model="amount" v-if="food.quantity < 10">
                     <option v-for="n in food.quantity" :key="n">{{n}}</option>
@@ -24,13 +30,12 @@
                 <select  id="quantity" class="form-control" @change="updateItem(food)" v-model="amount" v-else>
                     <option v-for="n in 10" :key="n">{{n}}</option>
                 </select>
-                
             </div>
         
         </div>
         <div class="mx-2">
             <p v-if="food.quantity == 0" class="text-red"><strong>SOLD OUT</strong></p>
-            <p v-if="food.quantity <= 5 & food.quantity !=0" class="text-red"><strong>{{food.quantity}} LEFT</strong></p>
+            
         </div>
         <modal :name="'menu-item-' + food.id" height="auto" :adaptive="true">
             <div class="food-preview">
@@ -51,6 +56,11 @@ export default {
             isChecked : false,
             amount : 1,
         }
+    },
+    mounted(){
+        this.food.price = this.food.variants.length > 0 ? this.food.variants[0].price : this.food.price
+        this.food.quantity = this.food.variants.length > 0 ? this.food.variants[0].quantity : this.food.quantity
+        this.food.variant_id = this.food.variants.length > 0 ? this.food.variants[0].id : this.food.id
     },
     methods : {
         imageBackground(img){
@@ -73,6 +83,21 @@ export default {
           food.amount = this.amount
           this.$store.dispatch('updateFoodToCart',food)  
         },
+        updateQuantity(){
+
+        },
+        updatePrice(event){
+        
+            var index = _.findIndex(this.food.variants, function(chr) {
+                    return chr.id == event.target.value;
+            });
+            this.food.variant_id = event.target.value
+            this.food.price = this.food.variants[index].price
+            this.food.quantity = this.food.variants[index].quantity
+            var newFood = this.food
+           
+            this.$store.dispatch('updateFoodToCart',newFood)  
+        }
     }
 }
 </script>
@@ -126,10 +151,13 @@ export default {
      }
     .form-control{
         width: 50%;
+        height: 30px;
+        font-size : 10px;
         margin: 3px;
         border: 1px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
+        padding: 0px;
         resize: vertical;
     }
     .p_checkbox{

@@ -212,6 +212,7 @@
                 <label for="inputAddress">Address</label>
                  <vue-google-autocomplete
                     ref="address"
+                    v-model="address"
                     id="map"
                     classname="form-control"
                     placeholder="Please type your address"
@@ -281,7 +282,7 @@ export default {
   props : ["button"],
   data () {
     return {
-      api : "https://partner.dinerr.app/api/",
+      api : "https://dev.dinerr.app/api/",
       restaurant_name : "",
       restaurant : {},
       dateIsset : false,
@@ -813,7 +814,7 @@ export default {
             this.axios.post(this.api + `calculate/price/${window.id}`,{
               lga_name : event.target.value
             }).then(e => {
-              if(e.data == 0){
+              if(e.data == 0 && this.restaurant.shipping_rate == false){
                 this.errorMsg = "Restaurant does not deliver to this area"
               }
             this.delivery_fee = e.data
@@ -912,10 +913,14 @@ export default {
               this.errorMsg = "Select a valid area"
               return false
             }
+            if(this.address == ""){
+              this.errorMsg = "Input a valid address"
+              return false
+            }
           
             let a = this;
             let handler = PaystackPop.setup({
-            key: 'pk_live_86416fab56ffa33012fdc7983191284c00b69fab', // Replace with your public key
+            key: 'pk_test_636c9a1c3f12f53b7812c201cc3abd07432eda85', // Replace with your public key
             email: this.email,
             amount: (this.total + this.delivery_fee) * 100,
             subaccount : this.restaurant.subaccount_code,
