@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-const api = "https://partner.dinerr.app/api/"
+const api = "https://dev.dinerr.app/api/"
 Vue.use(Vuex);
 Vue.use(VueAxios, axios)
 
@@ -34,11 +34,12 @@ export default new Vuex.Store({
         setFoods(state,foods){
             state.foods = foods
         },
-        pushFoodToCart (state, { id , amount , price }) {
+        pushFoodToCart (state, { id , amount , price,variant_id }) {
             state.items.push({
                 id,
                 amount,
-                price
+                price,
+                variant_id
             })
         },
         resetItems(state){
@@ -104,7 +105,7 @@ export default new Vuex.Store({
             const cartItem = state.items.find(item => item.id === food.id)
             if(!cartItem){
                 //Add else remove
-               commit('pushFoodToCart', { id: food.id ,amount : food.amount,price : food.price})
+               commit('pushFoodToCart', { id: food.id ,amount : food.amount,price : food.price,variant_id : food.variant_id})
             }else{
                commit('popFoodFromCart',{id: food.id})
             }
@@ -115,7 +116,7 @@ export default new Vuex.Store({
               {
                   if(cartItem){
                     commit('popFoodFromCart',{id: food.id})
-                    commit('pushFoodToCart', { id: food.id ,amount : food.amount,price : food.price})
+                    commit('pushFoodToCart', { id: food.id ,amount : food.amount,price : food.price,variant_id:food.variant_id})
                   }
               }
           }

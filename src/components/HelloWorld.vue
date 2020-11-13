@@ -212,6 +212,7 @@
                 <label for="inputAddress">Address</label>
                  <vue-google-autocomplete
                     ref="address"
+                    v-model="address"
                     id="map"
                     classname="form-control"
                     placeholder="Please type your address"
@@ -281,7 +282,7 @@ export default {
   props : ["button"],
   data () {
     return {
-      api : "https://partner.dinerr.app/api/",
+      api : "https://dev.dinerr.app/api/",
       restaurant_name : "",
       restaurant : {},
       dateIsset : false,
@@ -738,28 +739,32 @@ export default {
         getCordinates(addressData, placeResultData, id){
           let oldFare 
           this.address = placeResultData.formatted_address
-          console.log(placeResultData)
-    
-          this.$isLoading(true)
-          this.axios.post("https://api.gokada.ng/api/developer/order_estimate",{   
-            pickup_latitude : this.restaurant.latitude,
-            pickup_longitude: this.restaurant.longitude,
-            delivery_latitude: addressData.latitude,
-            delivery_longitude: addressData.longitude,
-            api_key : "qyIQGxDukbZ78EfHQK7Bc6dd9CJ8SDWbZRslXldKJkAOrythqMzFjW4iXz6P"
-          }).then(e => {
-               oldFare = e.data.fare
-              if(this.delivery_fee == 0){
-                this.delivery_fee = e.data.fare
-              }
-              console.log(oldFare)
-              if(oldFare != 0){
+       
+          
+          if(this.restaurant.shipping_rate == true){
+              this.$isLoading(true)
+              this.axios.post("https://api.gokada.ng/api/developer/order_estimate",{   
+              pickup_latitude : this.restaurant.latitude,
+              pickup_longitude: this.restaurant.longitude,
+              delivery_latitude: addressData.latitude,
+              delivery_longitude: addressData.longitude,
+              api_key : "qyIQGxDukbZ78EfHQK7Bc6dd9CJ8SDWbZRslXldKJkAOrythqMzFjW4iXz6P"
+            }).then(e => {
+                oldFare = e.data.fare
+                if(this.delivery_fee == 0){
                   this.delivery_fee = e.data.fare
-              }
+                }
+            
+                if(oldFare != 0){
+                    this.delivery_fee = e.data.fare
+                }
+                this.$isLoading(false)
+                this.errorMsg = ""
+            }).catch(e => {
               this.$isLoading(false)
-          }).catch(e => {
-            this.$isLoading(false)
-          })
+            })
+          }
+          
         },
         show () {
             this.$modal.show('order-modal');
@@ -791,6 +796,12 @@ export default {
           
         },
         selectArea(event){
+          if(event.target.value != this.restaurant.state){
+            this.errorMsg = "Restaurant does not deliver to this state"
+          }
+          if(event.target.value == this.restaurant.state.toLowerCase()){
+            this.errorMsg = ""
+          }
          this.areaDisabled = false
          this.axios.get('https://partner.dinerr.app/api/v1/states/' + event.target.value + '/lgas').then(e =>{
             this.selectAreas = e.data
@@ -798,14 +809,19 @@ export default {
         
         },
         calculatePrice(event){
+        
             this.$isLoading(true)
-          this.axios.post(this.api + `calculate/price/${window.id}`,{
-            lga_name : event.target.value
-          }).then(e => {
-           this.delivery_fee = e.data
-             this.$isLoading(false)
-           this.disabled = true
-          })
+            this.axios.post(this.api + `calculate/price/${window.id}`,{
+              lga_name : event.target.value
+            }).then(e => {
+              if(e.data == 0 && this.restaurant.shipping_rate == false){
+                this.errorMsg = "Restaurant does not deliver to this area"
+              }
+            this.delivery_fee = e.data
+              this.$isLoading(false)
+            this.disabled = true
+            })
+          
         },
         getOpeningHours(hours,day){
          
@@ -897,10 +913,14 @@ export default {
               this.errorMsg = "Select a valid area"
               return false
             }
+            if(this.address == ""){
+              this.errorMsg = "Input a valid address"
+              return false
+            }
           
             let a = this;
             let handler = PaystackPop.setup({
-            key: 'pk_live_86416fab56ffa33012fdc7983191284c00b69fab', // Replace with your public key
+            key: 'pk_test_636c9a1c3f12f53b7812c201cc3abd07432eda85', // Replace with your public key
             email: this.email,
             amount: (this.total + this.delivery_fee) * 100,
             subaccount : this.restaurant.subaccount_code,

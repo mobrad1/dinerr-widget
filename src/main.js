@@ -15,7 +15,7 @@ import loading from 'vuejs-loading-screen'
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@fortawesome/fontawesome-free/js/all.js'
 import * as VueGoogleMaps from 'vue2-google-maps'
-
+window._ = require('lodash');
 var filter = function(text, length, clamp){
   clamp = clamp || '...';
   var node = document.createElement('div');
